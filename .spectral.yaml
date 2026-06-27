@@ -1,0 +1,18 @@
+extends: ["spectral:oas"]
+rules:
+  operation-tag-defined: true
+  operation-summary:
+    description: Every verb should have a summary
+    given: $.paths[*][*]
+    severity: error
+    then:
+      field: summary
+      function: truthy
+  operation-operationId-camel-case:
+    description: opereationId must follow camelCase
+    given: $.paths[*][*].operationId
+    severity: error
+    then:
+      function: pattern
+      functionOptions:
+        match: "^[a-z][a-zA-Z0-9]*$"

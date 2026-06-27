@@ -1,0 +1,5 @@
+# Node (Spectral local installs)
+node_modules/
+
+# CI artifact — generated during pipeline, never committed
+openapi-base.yaml

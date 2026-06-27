@@ -1,0 +1,258 @@
+openapi: 3.1.0
+
+info: 
+  title: Ledgerline
+  version: 1.0.0  
+  description: Ledgerline is a recurring billing and payment collection API that lets small European businesses — gyms, clinics, schools, agencies — automatically charge their customers on a schedule without handling card data themselves. It sits between a merchant and a licensed payment provider, turning the painful, manual work of collecting recurring payments into something a business or their developer can plug in and trust.
+  contact: 
+    name: Yassine Reguigui
+    email: reguiguiyassine1@gmail.com
+    
+servers: 
+  - url: https://api.ledgerline.com/v1
+    description: Production
+  - url: https://sandbox.api.ledgerline.com/v1
+    description: Sandbox
+
+tags:
+  - name: customers
+    description: managing merchant customers
+  - name: plans
+    description: managing billing plans
+
+security: 
+  -  apiKey: []
+
+paths: 
+  /customers:
+    get: 
+      tags: 
+        -  customers
+      summary: List Customers 
+      operationId: listCustomers
+      parameters: 
+        - $ref: "#/components/parameters/AfterParam"
+        - $ref: "#/components/parameters/LimitParam"
+      responses: 
+        '200':
+          description: OK
+        '401':
+          $ref: "#/components/responses/Unauthorized"
+        '500':
+          $ref: "#/components/responses/InternalServerError"
+
+    post: 
+      tags: 
+        -  customers
+      summary: Create Customer
+      operationId: createCustomer
+      parameters: 
+        - $ref: "#/components/parameters/IdempotencyKey"
+      responses: 
+        '201':
+          description: Created
+        '400':
+          $ref: "#/components/responses/BadRequest"
+        '401':
+          $ref: "#/components/responses/Unauthorized"
+        '422':
+          $ref: "#/components/responses/UnprocessableEntity"
+        '500':
+          $ref: "#/components/responses/InternalServerError"
+
+  /customers/{customerId}:
+    get: 
+      tags: 
+        -  customers
+      summary: Get a Customer
+      operationId: getCustomer
+      parameters: 
+        - name: customerId
+          in: path
+          required: true
+          schema: 
+            type: string
+      responses: 
+        '200':
+          description: OK
+        '401':
+          $ref: "#/components/responses/Unauthorized"
+        '404':
+          $ref: "#/components/responses/NotFound"
+        '500':
+          $ref: "#/components/responses/InternalServerError"
+
+  /plans:
+    get: 
+      tags: 
+        -  plans
+      summary: List Plans
+      operationId: listPlans
+      parameters: 
+        - $ref: "#/components/parameters/LimitParam"
+        - $ref: "#/components/parameters/AfterParam"
+      responses: 
+        '200':
+          description: OK
+        '401':
+          $ref: "#/components/responses/Unauthorized"
+        '500':
+          $ref: "#/components/responses/InternalServerError"
+
+    post: 
+      tags: 
+        -  plans
+      summary: Create Plan
+      operationId: createPlan
+      parameters: 
+        - $ref: "#/components/parameters/IdempotencyKey"
+      responses: 
+        '201':
+          description: Created
+        '400':
+          $ref: "#/components/responses/BadRequest"
+        '401':
+          $ref: "#/components/responses/Unauthorized"
+        '422':
+          $ref: "#/components/responses/UnprocessableEntity"
+        '500':
+          $ref: "#/components/responses/InternalServerError"
+
+  /plans/{planId}:
+    get: 
+      tags: 
+        -  plans
+      summary: Get a Plan
+      operationId: getPlan
+      parameters: 
+        - name: planId
+          in: path
+          required: true
+          schema: 
+            type: string
+      responses: 
+        '200':
+          description: OK
+        '401':
+          $ref: "#/components/responses/Unauthorized"
+        '404':
+          $ref: "#/components/responses/NotFound"
+        '500':
+          $ref: "#/components/responses/InternalServerError"
+
+components: 
+  securitySchemes: 
+    apiKey: 
+      type: http
+      scheme: bearer
+      bearerFormat: APIKey
+      description: Authenticate with your API key. Use ll_live_... keys for production, ll_test_... for sandbox.
+
+  schemas: 
+    ProblemDetail: 
+      type: object
+      required: 
+        -  type
+        -  title
+        -  status
+      additionalProperties: true
+      properties: 
+        type:
+          type: string
+          format: uri
+          example: "https://api.ledgerline.com/problems/customer-not-found"
+        title:
+          type: string
+          example: "Customer Not Found"
+        status:
+          type: integer
+          example: 404
+        detail:
+          type: string
+          example: "No customer with id cus_abc123 exists in this account."
+        instance:
+          type: string
+          format: uri-reference
+          example: "/v1/customers/cus_abc123"
+
+  parameters: 
+    IdempotencyKey: 
+      description: "A unique string per request, max 255 chars. Resubmitting with the same key returns the cached response without re-executing the operation."
+      in: header
+      schema: 
+        type: string
+        minLength: 1
+        maxLength: 255 
+      name: Idempotency-Key
+      required: true
+
+    LimitParam:
+      in: query
+      name: limit
+      required: false
+      schema: 
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+
+    AfterParam:
+      in: query
+      name: starting_after
+      required: false
+      schema: 
+        type: string
+
+  responses: 
+    BadRequest:
+      description: "The request was malformed — missing required headers, invalid JSON, or a field failed basic format validation. Check the detail field for specifics."
+      content:
+        application/problem+json:
+          schema: 
+            $ref: "#/components/schemas/ProblemDetail" 
+    
+    Unauthorized:
+      description: "No valid API key was provided. Include your key in the Authorization: Bearer ll_live_... header."
+      content: 
+        application/problem+json: 
+          schema: 
+            $ref: "#/components/schemas/ProblemDetail"
+
+    Forbidden:
+      description: "The API key is valid but does not have permission to perform this action."
+      content: 
+        application/problem+json:
+          schema: 
+            $ref: "#/components/schemas/ProblemDetail"
+            
+    NotFound:
+      description: "The requested resource does not exist or has been deleted."
+      content: 
+        application/problem+json: 
+          schema: 
+            $ref: "#/components/schemas/ProblemDetail"
+
+    UnprocessableEntity:
+      description: "The request was well-formed but failed semantic validation — for example, a required field is present but its value is logically invalid. Fix the values in detail before retrying."
+      content: 
+        application/problem+json:
+          schema: 
+            $ref: "#/components/schemas/ProblemDetail"
+            
+    TooManyRequests:
+      description: "You have exceeded the rate limit. Wait for the duration in the Retry-After header before retrying."
+      content: 
+        application/problem+json: 
+          schema: 
+            $ref: "#/components/schemas/ProblemDetail"
+      headers: 
+        Retry-After: 
+          schema: 
+            type: integer
+
+    InternalServerError:
+      description: "An unexpected error occurred on Ledgerline's side. Retrying with exponential backoff is safe. If the problem persists, contact support with the instance value from the response body."
+      content: 
+        application/problem+json: 
+          schema: 
+            $ref: "#/components/schemas/ProblemDetail"
