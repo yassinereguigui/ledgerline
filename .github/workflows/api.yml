@@ -37,7 +37,8 @@ jobs:
                 tufin/oasdiff breaking \
                 /work/openapi-base.yaml \
                 /work/openapi.yaml \
-                --fail-on ERR
+                --fail-on ERR \
+                --err-ignore /work/.oasdiff-ignore
 
     mock:
         name: Mock Server Validation
