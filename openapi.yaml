@@ -149,6 +149,90 @@ components:
       description: Authenticate with your API key. Use ll_live_... keys for production, ll_test_... for sandbox.
 
   schemas: 
+    Customer: 
+      type: object
+      required: 
+        -  id
+        -  object
+        -  created
+        -  livemode
+        -  email
+      additionalProperties: true
+      properties: 
+        id:
+          type: string
+          example: cus_abc123
+        object:
+          const: customer
+          type: string
+        created:
+          type: string
+          format: date-time
+        livemode:
+          type: boolean
+        email:
+          type: string
+          format: email
+        name:
+          type: string
+          example: Will Smith
+        description:
+          type: ["string", "null"]
+        phone:
+          type: ["string", "null"]
+        address:
+          $ref: "#/components/schemas/Address"
+        metadata:
+          type: object
+          description: >-
+            Key-value pairs you can attach to store your own identifiers or notes.Ledgerline never interprets these. Useful for linking a customer to a record in your system.
+          additionalProperties: 
+            type: string
+            maxLength: 500
+
+    Address:
+      type: object
+      required: 
+        -  country
+      additionalProperties: true
+      properties: 
+        country:
+          type: string
+          pattern: '^[A-Z]{2}$'
+          description: Two-letter ISO 3166-1 alpha-2 country code.
+          example: NL
+        line1:
+          type: string
+        line2:
+          type: ["string", "null"]
+        city:
+          type: string
+        state:
+          type: ["string", "null"]
+        postal_code:
+          type: string
+
+    CustomerList:
+      type: object
+      required: 
+        -  object
+        -  data
+        -  has_more
+        -  url
+      properties: 
+        object:
+          type: string
+          const: "list"
+        data:
+          type: array
+          items: 
+            $ref: "#/components/schemas/Customer"
+        has_more:
+          type: boolean
+        url:
+          type: string
+          example: /v1/customers
+
     ProblemDetail: 
       type: object
       required: 
