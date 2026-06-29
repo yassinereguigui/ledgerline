@@ -183,12 +183,7 @@ components:
         address:
           $ref: "#/components/schemas/Address"
         metadata:
-          type: object
-          description: >-
-            Key-value pairs you can attach to store your own identifiers or notes.Ledgerline never interprets these. Useful for linking a customer to a record in your system.
-          additionalProperties: 
-            type: string
-            maxLength: 500
+          $ref: "#/components/schemas/Metadata"
 
     Address:
       type: object
@@ -232,6 +227,33 @@ components:
         url:
           type: string
           example: /v1/customers
+
+    CustomerCreate:
+      type: object
+      required: 
+        -  email
+      properties: 
+        email:
+          type: string
+          format: email
+        name:
+          type: ["string", "null"]
+        description:
+          type: ["string", "null"]
+        phone:
+          type: ["string", "null"]
+        address:
+          $ref: "#/components/schemas/Address"
+        metadata:
+          $ref: "#/components/schemas/Metadata"
+
+    Metadata:
+      type: object
+      description: >-
+            Key-value pairs you can attach to store your own identifiers or notes.Ledgerline never interprets these. Useful for linking a customer to a record in your system.
+      additionalProperties: 
+        type: string
+        maxLength: 500
 
     ProblemDetail: 
       type: object
