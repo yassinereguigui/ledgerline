@@ -1,0 +1,154 @@
+$kind: http-example
+request:
+  url: "{{baseUrl}}/customers"
+  method: POST
+  headers:
+    - key: Idempotency-Key
+      value: string
+      description: A unique string per request, max 255 chars. Resubmitting with the same key returns the cached response without re-executing the operation.
+    - key: Content-Type
+      value: application/json
+    - key: Accept
+      value: application/json
+    - key: Authorization
+      value: Bearer <token>
+      description: "Added as a part of security scheme: bearer"
+  body:
+    type: json
+    content: |-
+      {
+        "email": "e88kMno-kYGk@mmWTbLoIdBfCMU.oxh",
+        "name": null,
+        "description": null,
+        "phone": null,
+        "address": {
+          "country": "NL",
+          "line1": "string",
+          "line2": "string",
+          "city": "string",
+          "state": "string",
+          "postal_code": "string"
+        },
+        "metadata": {
+          "key_0": "string",
+          "key_1": "string",
+          "key_2": "string"
+        }
+      }
+response:
+  statusCode: 201
+  statusText: Created
+  headers:
+    Content-Type: application/json
+    Location: ""
+  body:
+    type: json
+    content: |-
+      {
+        "id": "cus_abc123",
+        "object": "string",
+        "created": "1962-02-23T00:35:06.712Z",
+        "livemode": true,
+        "email": "PTmmLZn5@UzSSuCfpDskKcPQtzfKXehaeskHvF.iuz",
+        "name": "Will Smith",
+        "description": "string",
+        "phone": null,
+        "address": {
+          "country": "NL",
+          "line1": "string",
+          "line2": "string",
+          "city": "string",
+          "state": null,
+          "postal_code": "string"
+        },
+        "metadata": {
+          "key_0": "string"
+        }
+      }
+    $type: |-
+      {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "cus_abc123"
+          },
+          "object": {
+            "type": "string"
+          },
+          "created": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "livemode": {
+            "type": "boolean"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "name": {
+            "type": "string",
+            "example": "Will Smith"
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "phone": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "address": {
+            "type": "object",
+            "properties": {
+              "country": {
+                "type": "string",
+                "pattern": "^[A-Z]{2}$",
+                "example": "NL",
+                "description": "Two-letter ISO 3166-1 alpha-2 country code."
+              },
+              "line1": {
+                "type": "string"
+              },
+              "line2": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "city": {
+                "type": "string"
+              },
+              "state": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "postal_code": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "country"
+            ]
+          },
+          "metadata": {
+            "type": "object",
+            "description": "Key-value pairs you can attach to store your own identifiers or notes. Ledgerline never interprets these. Useful for linking a customer to a record in your system."
+          }
+        },
+        "required": [
+          "id",
+          "object",
+          "created",
+          "livemode",
+          "email"
+        ]
+      }
+order: 1000

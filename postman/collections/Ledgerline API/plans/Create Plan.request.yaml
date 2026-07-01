@@ -1,0 +1,28 @@
+$kind: http-request
+url: "{{baseUrl}}/plans"
+method: POST
+headers:
+  - key: Idempotency-Key
+    value: string
+    description: A unique string per request, max 255 chars. Resubmitting with the same key returns the cached response without re-executing the operation.
+    $type: |-
+      {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255
+          }
+        },
+        "required": [
+          "value"
+        ]
+      }
+  - key: Accept
+    value: application/problem+json
+body:
+  type: text
+  content: ""
+examples: ./.resources/Create Plan.resources/examples
+order: 2000

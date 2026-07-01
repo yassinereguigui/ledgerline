@@ -1,0 +1,25 @@
+$kind: http-request
+url: "{{baseUrl}}/plans/:planId"
+method: GET
+headers:
+  Accept: application/problem+json
+pathVariables:
+  - key: planId
+    value: string
+    $type: |-
+      {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "value"
+        ]
+      }
+body:
+  type: text
+  content: ""
+examples: ./.resources/Get a Plan.resources/examples
+order: 3000

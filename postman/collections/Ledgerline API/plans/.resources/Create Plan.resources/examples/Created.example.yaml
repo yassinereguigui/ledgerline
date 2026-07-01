@@ -1,0 +1,21 @@
+$kind: http-example
+request:
+  url: "{{baseUrl}}/plans"
+  method: POST
+  headers:
+    - key: Idempotency-Key
+      value: string
+      description: A unique string per request, max 255 chars. Resubmitting with the same key returns the cached response without re-executing the operation.
+    - key: Authorization
+      value: Bearer <token>
+      description: "Added as a part of security scheme: bearer"
+  body:
+    type: text
+    content: ""
+response:
+  statusCode: 201
+  statusText: Created
+  body:
+    type: text
+    content: ""
+order: 1000

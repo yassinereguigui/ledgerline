@@ -1,0 +1,15 @@
+$kind: collection
+description: |-
+  Ledgerline is a recurring billing and payment collection API that lets small European businesses — gyms, clinics, schools, agencies — automatically charge their customers on a schedule without handling card data themselves. It sits between a merchant and a licensed payment provider, turning the painful, manual work of collecting recurring payments into something a business or their developer can plug in and trust.
+
+  Contact Support:
+   Name: Yassine Reguigui
+   Email: reguiguiyassine1@gmail.com
+variables:
+  baseUrl: https://api.ledgerline.com/v1
+auth:
+  - id: 4da4e7bd-e34c-4b00-8c90-55f5513a0d77
+    type: bearer
+    name: bearer auth
+    credentials:
+      token: "{{bearerToken}}"

@@ -1,0 +1,25 @@
+$kind: http-request
+url: "{{baseUrl}}/customers/:customerId"
+method: GET
+headers:
+  Accept: application/json
+pathVariables:
+  - key: customerId
+    value: string
+    $type: |-
+      {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "value"
+        ]
+      }
+body:
+  type: text
+  content: ""
+examples: ./.resources/Get a Customer.resources/examples
+order: 3000

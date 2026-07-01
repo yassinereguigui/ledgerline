@@ -1,0 +1,20 @@
+$kind: http-example
+request:
+  url: "{{baseUrl}}/plans/:planId"
+  method: GET
+  headers:
+    - key: Authorization
+      value: Bearer <token>
+      description: "Added as a part of security scheme: bearer"
+  pathVariables:
+    planId: string
+  body:
+    type: text
+    content: ""
+response:
+  statusCode: 200
+  statusText: OK
+  body:
+    type: text
+    content: ""
+order: 1000
