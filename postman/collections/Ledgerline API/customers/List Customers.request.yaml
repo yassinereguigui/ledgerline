@@ -1,4 +1,5 @@
 $kind: http-request
+name: List Customers
 url: "{{baseUrl}}/customers?starting_after=string&limit=20"
 method: GET
 headers:
@@ -24,5 +25,14 @@ queryParams:
 body:
   type: text
   content: ""
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("200 OK", () => pm.response.to.have.status(200));
+      const b = pm.response.json();
+      pm.test("list envelope", () => pm.expect(b.object).to.eql("list"));
+      pm.test("data is array", () => pm.expect(b.data).to.be.an("array"));
+      pm.test("has_more is boolean", () => pm.expect(b.has_more).to.be.a("boolean"));
+    language: text/javascript
 examples: ./.resources/List Customers.resources/examples
 order: 1000

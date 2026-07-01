@@ -1,9 +1,11 @@
 $kind: http-request
+name: Create Customer
 url: "{{baseUrl}}/customers"
 method: POST
 headers:
   - key: Idempotency-Key
-    value: string
+    value: "{{$guid}}"
+    disabled: false
     description: A unique string per request, max 255 chars. Resubmitting with the same key returns the cached response without re-executing the operation.
     $type: |-
       {
@@ -21,8 +23,10 @@ headers:
       }
   - key: Content-Type
     value: application/json
+    disabled: false
   - key: Accept
     value: application/json
+    disabled: false
 body:
   type: json
   content: |-
@@ -115,5 +119,14 @@ body:
         "email"
       ]
     }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("201 Created", () => pm.response.to.have.status(201));
+      const c = pm.response.json();
+      pm.test("is a customer", () => pm.expect(c.object).to.eql("customer"));
+      pm.test("has id", () => pm.expect(c.id).to.be.a("string"));
+      pm.test("Location header set", () => pm.expect(pm.response.headers.get("Location")).to.be.a("string"));
+    language: text/javascript
 examples: ./.resources/Create Customer.resources/examples
 order: 2000
