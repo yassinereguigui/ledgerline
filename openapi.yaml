@@ -277,6 +277,53 @@ components:
         type: string
         maxLength: 500
 
+    Plan:
+      type: object
+      additionalProperties: true
+      properties: 
+        id:
+          type: string
+          pattern: '^plan_[a-zA-Z0-9]+$'
+          example: plan_abc123
+        object:
+          type: string
+          const: plan
+        created:
+          type: string
+          format: date-time
+        livemode:
+          type: boolean
+        nickname:
+          type: ["string", "null"]
+        amount:
+          type: integer
+        currency:
+          type: string
+          pattern: "^[a-z]{3}$"
+          description: ISO 4217
+          example: eur
+        interval:
+          type: string
+          enum: [day, week, month, year]
+        interval_count:
+          type: integer
+          minimum: 1
+          default: 1
+        active:
+          type: boolean
+        metadata:
+          $ref: "#/components/schemas/Metadata"
+      required: 
+        -  id
+        -  amount
+        -  interval
+        -  object
+        -  created
+        -  livemode
+        -  currency
+        -  interval_count
+        -  active
+
     ProblemDetail: 
       type: object
       required: 
