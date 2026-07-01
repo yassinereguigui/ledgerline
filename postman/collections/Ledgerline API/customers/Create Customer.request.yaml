@@ -1,0 +1,119 @@
+$kind: http-request
+url: "{{baseUrl}}/customers"
+method: POST
+headers:
+  - key: Idempotency-Key
+    value: string
+    description: A unique string per request, max 255 chars. Resubmitting with the same key returns the cached response without re-executing the operation.
+    $type: |-
+      {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255
+          }
+        },
+        "required": [
+          "value"
+        ]
+      }
+  - key: Content-Type
+    value: application/json
+  - key: Accept
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "email": "e88kMno-kYGk@mmWTbLoIdBfCMU.oxh",
+      "name": null,
+      "description": null,
+      "phone": null,
+      "address": {
+        "country": "NL",
+        "line1": "string",
+        "line2": "string",
+        "city": "string",
+        "state": "string",
+        "postal_code": "string"
+      },
+      "metadata": {
+        "key_0": "string",
+        "key_1": "string",
+        "key_2": "string"
+      }
+    }
+  $type: |-
+    {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string",
+          "format": "email"
+        },
+        "name": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "description": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "phone": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "address": {
+          "type": "object",
+          "properties": {
+            "country": {
+              "type": "string",
+              "pattern": "^[A-Z]{2}$",
+              "example": "NL",
+              "description": "Two-letter ISO 3166-1 alpha-2 country code."
+            },
+            "line1": {
+              "type": "string"
+            },
+            "line2": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "city": {
+              "type": "string"
+            },
+            "state": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "postal_code": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "country"
+          ]
+        },
+        "metadata": {
+          "type": "object",
+          "description": "Key-value pairs you can attach to store your own identifiers or notes. Ledgerline never interprets these. Useful for linking a customer to a record in your system."
+        }
+      },
+      "required": [
+        "email"
+      ]
+    }
+examples: ./.resources/Create Customer.resources/examples
+order: 2000

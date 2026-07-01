@@ -1,0 +1,66 @@
+$kind: http-example
+name: The request was malformed — missing required headers, invalid JSON, or a field failed basic format validation. Check the detail field for specifics.
+request:
+  url: "{{baseUrl}}/plans"
+  method: POST
+  headers:
+    - key: Idempotency-Key
+      value: string
+      description: A unique string per request, max 255 chars. Resubmitting with the same key returns the cached response without re-executing the operation.
+    - key: Accept
+      value: application/problem+json
+    - key: Authorization
+      value: Bearer <token>
+      description: "Added as a part of security scheme: bearer"
+  body:
+    type: text
+    content: ""
+response:
+  statusCode: 400
+  statusText: Bad Request
+  headers:
+    Content-Type: application/problem+json
+  body:
+    type: json
+    content: |-
+      {
+        "type": "https://api.ledgerline.com/problems/customer-not-found",
+        "title": "Customer Not Found",
+        "status": 404,
+        "detail": "No customer with id cus_abc123 exists in this account.",
+        "instance": "/v1/customers/cus_abc123"
+      }
+    $type: |-
+      {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "https://api.ledgerline.com/problems/customer-not-found",
+            "format": "uri"
+          },
+          "title": {
+            "type": "string",
+            "example": "Customer Not Found"
+          },
+          "status": {
+            "type": "integer",
+            "example": 404
+          },
+          "detail": {
+            "type": "string",
+            "example": "No customer with id cus_abc123 exists in this account."
+          },
+          "instance": {
+            "type": "string",
+            "example": "/v1/customers/cus_abc123",
+            "format": "uri-reference"
+          }
+        },
+        "required": [
+          "type",
+          "title",
+          "status"
+        ]
+      }
+order: 2000

@@ -1,0 +1,12 @@
+# Use this workspace to collaborate
+workspace:
+  id: 0e638b6e-bc05-4e54-9072-6fd0e49ecf09
+
+localResources:
+  specs:
+    - ../openapi.yaml
+  docs:
+    - ../docs/learnings-log.md
+    - ../CLAUDE.md
+    - ../docs/founding-engineer-playbook.md
+    - ../BRIEF.md

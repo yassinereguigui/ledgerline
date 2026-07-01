@@ -1,0 +1,28 @@
+$kind: http-request
+url: "{{baseUrl}}/customers?starting_after=string&limit=20"
+method: GET
+headers:
+  Accept: application/json
+queryParams:
+  - key: starting_after
+    value: string
+    $type: string
+  - key: limit
+    value: "20"
+    $type: |-
+      {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "integer",
+            "default": 20,
+            "minimum": 1,
+            "maximum": 100
+          }
+        }
+      }
+body:
+  type: text
+  content: ""
+examples: ./.resources/List Customers.resources/examples
+order: 1000

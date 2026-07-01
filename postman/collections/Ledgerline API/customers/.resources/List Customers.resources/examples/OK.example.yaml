@@ -1,0 +1,185 @@
+$kind: http-example
+request:
+  url: "{{baseUrl}}/customers?starting_after=string&limit=20"
+  method: GET
+  headers:
+    - key: Accept
+      value: application/json
+    - key: Authorization
+      value: Bearer <token>
+      description: "Added as a part of security scheme: bearer"
+  queryParams:
+    starting_after: string
+    limit: "20"
+  body:
+    type: text
+    content: ""
+response:
+  statusCode: 200
+  statusText: OK
+  headers:
+    Content-Type: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "object": "string",
+        "data": [
+          {
+            "id": "cus_abc123",
+            "object": "string",
+            "created": "2015-09-08T05:01:56.673Z",
+            "livemode": true,
+            "email": "ivkS@vYCjpqlbyCMXkNIBruzTa.afpw",
+            "name": "Will Smith",
+            "description": null,
+            "phone": null,
+            "address": {
+              "country": "NL",
+              "line1": "string",
+              "line2": null,
+              "city": "string",
+              "state": "string",
+              "postal_code": "string"
+            },
+            "metadata": {
+              "key_0": "string"
+            }
+          },
+          {
+            "id": "cus_abc123",
+            "object": "string",
+            "created": "2021-10-19T22:35:41.927Z",
+            "livemode": false,
+            "email": "IHSkP@nIwNTJlxHKaeEUY.yxby",
+            "name": "Will Smith",
+            "description": null,
+            "phone": "string",
+            "address": {
+              "country": "NL",
+              "line1": "string",
+              "line2": "string",
+              "city": "string",
+              "state": null,
+              "postal_code": "string"
+            },
+            "metadata": {
+              "key_0": "string",
+              "key_1": "string"
+            }
+          }
+        ],
+        "has_more": true,
+        "url": "/v1/customers"
+      }
+    $type: |-
+      {
+        "type": "object",
+        "properties": {
+          "object": {
+            "type": "string"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "example": "cus_abc123"
+                },
+                "object": {
+                  "type": "string"
+                },
+                "created": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "livemode": {
+                  "type": "boolean"
+                },
+                "email": {
+                  "type": "string",
+                  "format": "email"
+                },
+                "name": {
+                  "type": "string",
+                  "example": "Will Smith"
+                },
+                "description": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "phone": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "address": {
+                  "type": "object",
+                  "properties": {
+                    "country": {
+                      "type": "string",
+                      "pattern": "^[A-Z]{2}$",
+                      "example": "NL",
+                      "description": "Two-letter ISO 3166-1 alpha-2 country code."
+                    },
+                    "line1": {
+                      "type": "string"
+                    },
+                    "line2": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "city": {
+                      "type": "string"
+                    },
+                    "state": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "postal_code": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "country"
+                  ]
+                },
+                "metadata": {
+                  "type": "object",
+                  "description": "Key-value pairs you can attach to store your own identifiers or notes. Ledgerline never interprets these. Useful for linking a customer to a record in your system."
+                }
+              },
+              "required": [
+                "id",
+                "object",
+                "created",
+                "livemode",
+                "email"
+              ]
+            }
+          },
+          "has_more": {
+            "type": "boolean"
+          },
+          "url": {
+            "type": "string",
+            "example": "/v1/customers"
+          }
+        },
+        "required": [
+          "object",
+          "data",
+          "has_more",
+          "url"
+        ]
+      }
+order: 1000
