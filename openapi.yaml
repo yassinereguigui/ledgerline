@@ -324,6 +324,58 @@ components:
         -  interval_count
         -  active
 
+    PlanList:
+      type: object
+      additionalProperties: true
+      properties: 
+        object:
+          type: string
+          const: list
+        data:
+          type: array
+          items: 
+            $ref: "#/components/schemas/Plan"
+        has_more:
+          type: boolean
+        url:
+          type: string
+          example: /v1/plans
+      required: 
+        -  object
+        -  data
+        -  has_more
+        -  url
+
+    PlanCreate:
+      type: object
+      additionalProperties: false
+      properties: 
+        amount:
+          type: integer
+        currency:
+          type: string
+          pattern: ^[a-z]{3}$
+          description: ISO 4217
+          example: eur
+        interval:
+          type: string
+          enum: [day, week, month, year]
+        interval_count:
+          type: integer
+          minimum: 1
+          default: 1
+        active:
+          type: boolean
+          default: true
+        nickname:
+          type: string
+        metadata:
+          $ref: "#/components/schemas/Metadata"
+      required: 
+        -  amount
+        -  currency
+        -  interval
+
     ProblemDetail: 
       type: object
       required: 
