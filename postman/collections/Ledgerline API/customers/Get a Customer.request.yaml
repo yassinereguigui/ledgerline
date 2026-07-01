@@ -1,4 +1,5 @@
 $kind: http-request
+name: Get a Customer
 url: "{{baseUrl}}/customers/:customerId"
 method: GET
 headers:
@@ -21,5 +22,11 @@ pathVariables:
 body:
   type: text
   content: ""
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("200 OK", () => pm.response.to.have.status(200));
+      pm.test("is a customer", () => pm.expect(pm.response.json().object).to.eql("customer"));
+    language: text/javascript
 examples: ./.resources/Get a Customer.resources/examples
 order: 3000
