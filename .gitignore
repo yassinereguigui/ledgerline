@@ -3,3 +3,9 @@ node_modules/
 
 # CI artifact — generated during pipeline, never committed
 openapi-base.yaml
+
+BRIEF.md
+CLAUDE.md
+docs/
+
+.postman/resources.yaml
