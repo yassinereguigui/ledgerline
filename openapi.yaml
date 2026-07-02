@@ -115,6 +115,10 @@ paths:
       responses: 
         '200':
           description: OK
+          content: 
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/PlanList" 
         '401':
           $ref: "#/components/responses/Unauthorized"
         '500':
@@ -127,9 +131,22 @@ paths:
       operationId: createPlan
       parameters: 
         - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody: 
+        required: true
+        content: 
+          application/json:
+            schema: 
+              $ref: "#/components/schemas/PlanCreate" 
       responses: 
         '201':
           description: Created
+          content: 
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/Plan" 
+          headers: 
+            Location:
+              $ref: "#/components/headers/Location" 
         '400':
           $ref: "#/components/responses/BadRequest"
         '401':
@@ -154,6 +171,10 @@ paths:
       responses: 
         '200':
           description: OK
+          content: 
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/Plan" 
         '401':
           $ref: "#/components/responses/Unauthorized"
         '404':
@@ -272,7 +293,7 @@ components:
     Metadata:
       type: object
       description: >-
-            Key-value pairs you can attach to store your own identifiers or notes. Ledgerline never interprets these. Useful for linking a customer to a record in your system.
+            Key-value pairs you can attach to store your own identifiers or notes. Ledgerline never interprets these. Useful for linking a resource to a record in your system.
       additionalProperties: 
         type: string
         maxLength: 500
