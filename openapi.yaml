@@ -19,6 +19,8 @@ tags:
     description: managing merchant customers
   - name: plans
     description: managing billing plans
+  - name: subscriptions
+    description: managing subscriptions
 
 security: 
   -  apiKey: []
@@ -88,7 +90,7 @@ paths:
           in: path
           required: true
           schema: 
-            type: string
+            $ref: "#/components/schemas/CustomerId"
       responses: 
         '200':
           description: OK
@@ -167,7 +169,7 @@ paths:
           in: path
           required: true
           schema: 
-            type: string
+            $ref: "#/components/schemas/PlanId"
       responses: 
         '200':
           description: OK
@@ -175,6 +177,120 @@ paths:
             application/json:
               schema: 
                 $ref: "#/components/schemas/Plan" 
+        '401':
+          $ref: "#/components/responses/Unauthorized"
+        '404':
+          $ref: "#/components/responses/NotFound"
+        '500':
+          $ref: "#/components/responses/InternalServerError"
+
+  /subscriptions:
+    get: 
+      tags: 
+        -  subscriptions
+      summary: List Subscriptions 
+      operationId: listSubscriptions
+      parameters: 
+        - $ref: "#/components/parameters/AfterParam"
+        - $ref: "#/components/parameters/LimitParam"
+        - $ref: "#/components/parameters/CustomerFilter"
+        - $ref: "#/components/parameters/StatusFilter"
+      responses: 
+        '200':
+          description: OK
+          content: 
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/SubscriptionList" 
+        '401':
+          $ref: "#/components/responses/Unauthorized"
+        '500':
+          $ref: "#/components/responses/InternalServerError"
+
+    post: 
+      tags: 
+        -  subscriptions
+      summary: Create Subscription
+      operationId: createSubscription
+      parameters: 
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody: 
+        required: true
+        content: 
+          application/json: 
+            schema: 
+              $ref: "#/components/schemas/SubscriptionCreate"
+      responses: 
+        '201':
+          description: Created
+          headers: 
+            Location:
+              $ref: "#/components/headers/Location"
+          content: 
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/Subscription" 
+        '400':
+          $ref: "#/components/responses/BadRequest"
+        '401':
+          $ref: "#/components/responses/Unauthorized"
+        '422':
+          $ref: "#/components/responses/UnprocessableEntity"
+        '500':
+          $ref: "#/components/responses/InternalServerError"
+
+  /subscriptions/{subscriptionId}:
+    get: 
+      tags: 
+        -  subscriptions
+      summary: Get a Subscription
+      operationId: getSubscription
+      parameters: 
+        - name: subscriptionId
+          in: path
+          required: true
+          schema: 
+            $ref: "#/components/schemas/SubscriptionId"
+      responses: 
+        '200':
+          description: OK
+          content: 
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/Subscription" 
+        '401':
+          $ref: "#/components/responses/Unauthorized"
+        '404':
+          $ref: "#/components/responses/NotFound"
+        '500':
+          $ref: "#/components/responses/InternalServerError"
+
+    delete: 
+      tags: 
+        -  subscriptions
+      summary: Delete a Subscription
+      operationId: deleteSubscription
+      parameters: 
+        - name: subscriptionId
+          in: path
+          required: true
+          schema: 
+            $ref: "#/components/schemas/SubscriptionId"
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - name: cancel_at_period_end
+          in: query
+          required: true
+          schema: 
+            type: boolean
+      responses: 
+        '200':
+          description: OK
+          content: 
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/Subscription"
+        '400':
+          $ref: "#/components/responses/BadRequest"
         '401':
           $ref: "#/components/responses/Unauthorized"
         '404':
@@ -409,8 +525,7 @@ components:
         livemode:
           type: boolean
         status:
-          type: string
-          enum: [incomplete, incomplete_expired, trialing, active, past_due, canceled]
+          $ref: "#/components/schemas/SubscriptionStatus"
         start_date:
           type: string
           format: date-time
@@ -507,6 +622,10 @@ components:
       pattern: '^sub_[a-zA-Z0-9]+$'
       example: sub_abc123
 
+    SubscriptionStatus:
+      type: string
+      enum: [incomplete, incomplete_expired, trialing, active, past_due, canceled]
+
     ProblemDetail: 
       type: object
       required: 
@@ -569,6 +688,20 @@ components:
       required: false
       schema: 
         type: string
+        
+    CustomerFilter:
+      in: query
+      name: customer
+      required: false
+      schema: 
+        $ref: "#/components/schemas/CustomerId"
+
+    StatusFilter:
+      in: query
+      name: status
+      required: false
+      schema: 
+        $ref: "#/components/schemas/SubscriptionStatus"
 
   responses: 
     BadRequest:
