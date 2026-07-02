@@ -399,9 +399,7 @@ components:
       additionalProperties: true
       properties: 
         id:
-          type: string
-          pattern: '^sub_[a-zA-Z0-9]+$'
-          example: sub_abc123
+          $ref: "#/components/schemas/SubscriptionId"
         object:
           type: string
           const: subscription
@@ -455,6 +453,45 @@ components:
         -  current_period_end
         -  cancel_at_period_end
 
+    SubscriptionList:
+      type: object
+      additionalProperties: true
+      properties: 
+        object:
+          type: string
+          const: list
+        data:
+          type: array
+          items: 
+            $ref: "#/components/schemas/Subscription"
+        has_more:
+          type: boolean
+        url:
+          type: string
+          example: /v1/subscriptions
+      required: 
+        -  object
+        -  data
+        -  has_more
+        -  url
+
+    SubscriptionCreate:
+      type: object
+      additionalProperties: false
+      properties: 
+        customer:
+          $ref: "#/components/schemas/CustomerId"
+        plan:
+          $ref: "#/components/schemas/PlanId"
+        trial_period_days:
+          type: integer
+          minimum: 1
+        metadata:
+          $ref: "#/components/schemas/Metadata"
+      required: 
+        -  customer
+        -  plan
+
     CustomerId:
       type: string
       pattern: '^cus_[a-zA-Z0-9]+$'
@@ -464,6 +501,11 @@ components:
       type: string
       pattern: '^plan_[a-zA-Z0-9]+$'
       example: plan_abc123
+
+    SubscriptionId:
+      type: string
+      pattern: '^sub_[a-zA-Z0-9]+$'
+      example: sub_abc123
 
     ProblemDetail: 
       type: object
