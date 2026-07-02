@@ -202,8 +202,7 @@ components:
       additionalProperties: true
       properties: 
         id:
-          type: string
-          example: cus_abc123
+          $ref: "#/components/schemas/CustomerId"
         object:
           const: customer
           type: string
@@ -303,9 +302,7 @@ components:
       additionalProperties: true
       properties: 
         id:
-          type: string
-          pattern: '^plan_[a-zA-Z0-9]+$'
-          example: plan_abc123
+          $ref: "#/components/schemas/PlanId"
         object:
           type: string
           const: plan
@@ -396,6 +393,77 @@ components:
         -  amount
         -  currency
         -  interval
+
+    Subscription:
+      type: object
+      additionalProperties: true
+      properties: 
+        id:
+          type: string
+          pattern: '^sub_[a-zA-Z0-9]+$'
+          example: sub_abc123
+        object:
+          type: string
+          const: subscription
+        created:
+          type: string
+          format: date-time
+        livemode:
+          type: boolean
+        status:
+          type: string
+          enum: [incomplete, incomplete_expired, trialing, active, past_due, canceled]
+        start_date:
+          type: string
+          format: date-time
+        current_period_start:
+          type: ["string", "null"]
+          format: date-time
+        current_period_end:
+          type: ["string", "null"]
+          format: date-time
+        cancel_at_period_end:
+          type: boolean
+        canceled_at:
+          type: ["string", "null"]
+          format: date-time
+        ended_at:
+          type: ["string", "null"]
+          format: date-time
+        trial_start:
+          type: ["string", "null"]
+          format: date-time
+        trial_end:
+          type: ["string", "null"]
+          format: date-time
+        metadata:
+          $ref: "#/components/schemas/Metadata"
+        customer:
+          $ref: "#/components/schemas/CustomerId"
+        plan:
+          $ref: "#/components/schemas/PlanId"
+      required: 
+        -  id
+        -  object
+        -  created
+        -  livemode
+        -  customer
+        -  plan
+        -  status
+        -  start_date
+        -  current_period_start
+        -  current_period_end
+        -  cancel_at_period_end
+
+    CustomerId:
+      type: string
+      pattern: '^cus_[a-zA-Z0-9]+$'
+      example: cus_abc123
+
+    PlanId:
+      type: string
+      pattern: '^plan_[a-zA-Z0-9]+$'
+      example: plan_abc123
 
     ProblemDetail: 
       type: object
