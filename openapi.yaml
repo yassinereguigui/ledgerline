@@ -115,6 +115,10 @@ paths:
       responses: 
         '200':
           description: OK
+          content: 
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/PlanList" 
         '401':
           $ref: "#/components/responses/Unauthorized"
         '500':
@@ -127,9 +131,22 @@ paths:
       operationId: createPlan
       parameters: 
         - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody: 
+        required: true
+        content: 
+          application/json:
+            schema: 
+              $ref: "#/components/schemas/PlanCreate" 
       responses: 
         '201':
           description: Created
+          content: 
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/Plan" 
+          headers: 
+            Location:
+              $ref: "#/components/headers/Location" 
         '400':
           $ref: "#/components/responses/BadRequest"
         '401':
@@ -154,6 +171,10 @@ paths:
       responses: 
         '200':
           description: OK
+          content: 
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/Plan" 
         '401':
           $ref: "#/components/responses/Unauthorized"
         '404':
@@ -272,10 +293,109 @@ components:
     Metadata:
       type: object
       description: >-
-            Key-value pairs you can attach to store your own identifiers or notes. Ledgerline never interprets these. Useful for linking a customer to a record in your system.
+            Key-value pairs you can attach to store your own identifiers or notes. Ledgerline never interprets these. Useful for linking a resource to a record in your system.
       additionalProperties: 
         type: string
         maxLength: 500
+
+    Plan:
+      type: object
+      additionalProperties: true
+      properties: 
+        id:
+          type: string
+          pattern: '^plan_[a-zA-Z0-9]+$'
+          example: plan_abc123
+        object:
+          type: string
+          const: plan
+        created:
+          type: string
+          format: date-time
+        livemode:
+          type: boolean
+        nickname:
+          type: ["string", "null"]
+        amount:
+          type: integer
+        currency:
+          type: string
+          pattern: "^[a-z]{3}$"
+          description: ISO 4217
+          example: eur
+        interval:
+          type: string
+          enum: [day, week, month, year]
+        interval_count:
+          type: integer
+          minimum: 1
+          default: 1
+        active:
+          type: boolean
+        metadata:
+          $ref: "#/components/schemas/Metadata"
+      required: 
+        -  id
+        -  amount
+        -  interval
+        -  object
+        -  created
+        -  livemode
+        -  currency
+        -  interval_count
+        -  active
+
+    PlanList:
+      type: object
+      additionalProperties: true
+      properties: 
+        object:
+          type: string
+          const: list
+        data:
+          type: array
+          items: 
+            $ref: "#/components/schemas/Plan"
+        has_more:
+          type: boolean
+        url:
+          type: string
+          example: /v1/plans
+      required: 
+        -  object
+        -  data
+        -  has_more
+        -  url
+
+    PlanCreate:
+      type: object
+      additionalProperties: false
+      properties: 
+        amount:
+          type: integer
+        currency:
+          type: string
+          pattern: ^[a-z]{3}$
+          description: ISO 4217
+          example: eur
+        interval:
+          type: string
+          enum: [day, week, month, year]
+        interval_count:
+          type: integer
+          minimum: 1
+          default: 1
+        active:
+          type: boolean
+          default: true
+        nickname:
+          type: string
+        metadata:
+          $ref: "#/components/schemas/Metadata"
+      required: 
+        -  amount
+        -  currency
+        -  interval
 
     ProblemDetail: 
       type: object
