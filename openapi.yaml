@@ -21,6 +21,10 @@ tags:
     description: managing billing plans
   - name: subscriptions
     description: managing subscriptions
+  - name: payment_methods
+    description: managing payment methods
+  - name: payments
+    description: managing payments
 
 security: 
   -  apiKey: []
@@ -32,6 +36,7 @@ paths:
         -  customers
       summary: List Customers 
       operationId: listCustomers
+      description: "Returns a paginated list of customers in the current account, most recently created first. Page through results with `starting_after` set to the last id of the previous page. Read-only; no side effects."
       parameters: 
         - $ref: "#/components/parameters/AfterParam"
         - $ref: "#/components/parameters/LimitParam"
@@ -52,6 +57,7 @@ paths:
         -  customers
       summary: Create Customer
       operationId: createCustomer
+      description: "Creates a customer — the account holder that plans, subscriptions, and payment methods attach to. Requires an `Idempotency-Key` header so a retried request never creates a duplicate customer. Returns the full created customer, including its server-assigned `id`."
       parameters: 
         - $ref: "#/components/parameters/IdempotencyKey"
       requestBody: 
@@ -85,6 +91,7 @@ paths:
         -  customers
       summary: Get a Customer
       operationId: getCustomer
+      description: "Retrieves a single customer by id. Returns 404 if no customer with that id exists in the current account. Read-only."
       parameters: 
         - name: customerId
           in: path
@@ -111,6 +118,7 @@ paths:
         -  plans
       summary: List Plans
       operationId: listPlans
+      description: "Returns a paginated list of billing plans in the current account, most recently created first. Page through results with `starting_after`. Read-only; no side effects."
       parameters: 
         - $ref: "#/components/parameters/LimitParam"
         - $ref: "#/components/parameters/AfterParam"
@@ -131,6 +139,7 @@ paths:
         -  plans
       summary: Create Plan
       operationId: createPlan
+      description: "Creates a billing plan: a reusable price and recurrence (amount in the currency's minor units + ISO 4217 currency, plus an interval) that subscriptions reference. Requires an `Idempotency-Key` header so a retry never creates a duplicate plan. Returns the full created plan."
       parameters: 
         - $ref: "#/components/parameters/IdempotencyKey"
       requestBody: 
@@ -164,6 +173,7 @@ paths:
         -  plans
       summary: Get a Plan
       operationId: getPlan
+      description: "Retrieves a single plan by id. Returns 404 if no plan with that id exists in the current account. Read-only."
       parameters: 
         - name: planId
           in: path
@@ -190,11 +200,12 @@ paths:
         -  subscriptions
       summary: List Subscriptions 
       operationId: listSubscriptions
+      description: "Returns a paginated list of subscriptions in the current account, most recently created first. Filter by `customer` or by `status`. Page through results with `starting_after`. Read-only; no side effects."
       parameters: 
         - $ref: "#/components/parameters/AfterParam"
         - $ref: "#/components/parameters/LimitParam"
         - $ref: "#/components/parameters/CustomerFilter"
-        - $ref: "#/components/parameters/StatusFilter"
+        - $ref: "#/components/parameters/SubscriptionStatusFilter"
       responses: 
         '200':
           description: OK
@@ -212,6 +223,7 @@ paths:
         -  subscriptions
       summary: Create Subscription
       operationId: createSubscription
+      description: "Subscribes a customer to a plan, starting the recurring billing cycle (optionally after a trial). Requires an `Idempotency-Key` header so a retry never creates a duplicate subscription. The subscription may begin in an `incomplete` or `trialing` state until the first payment or SEPA mandate is confirmed. Returns the full created subscription."
       parameters: 
         - $ref: "#/components/parameters/IdempotencyKey"
       requestBody: 
@@ -245,6 +257,7 @@ paths:
         -  subscriptions
       summary: Get a Subscription
       operationId: getSubscription
+      description: "Retrieves a single subscription by id, including its current status and billing period. Returns 404 if no subscription with that id exists in the current account. Read-only."
       parameters: 
         - name: subscriptionId
           in: path
@@ -270,6 +283,7 @@ paths:
         -  subscriptions
       summary: Delete a Subscription
       operationId: deleteSubscription
+      description: "Cancels a subscription. Set `cancel_at_period_end=false` to end it immediately, or `true` to keep it active until the current billing period ends. This is a soft cancellation: the record is retained (status becomes `canceled`, with `canceled_at`/`ended_at` populated) and stays retrievable for history and reporting — it is not erased. Requires an `Idempotency-Key` header. Returns the updated subscription."
       parameters: 
         - name: subscriptionId
           in: path
@@ -291,6 +305,141 @@ paths:
                 $ref: "#/components/schemas/Subscription"
         '400':
           $ref: "#/components/responses/BadRequest"
+        '401':
+          $ref: "#/components/responses/Unauthorized"
+        '404':
+          $ref: "#/components/responses/NotFound"
+        '500':
+          $ref: "#/components/responses/InternalServerError"
+
+  /payment_methods:
+    get: 
+      tags: 
+        -  payment_methods
+      summary: List Payment Methods 
+      operationId: listPaymentMethods
+      description: "Returns a paginated list of payment methods in the current account, most recently created first. Filter by `customer`. Page through results with `starting_after`. Only masked instrument details are ever returned — never full card or IBAN data. Read-only."
+      parameters: 
+        - $ref: "#/components/parameters/AfterParam"
+        - $ref: "#/components/parameters/LimitParam"
+        - $ref: "#/components/parameters/CustomerFilter"
+      responses: 
+        '200':
+          description: OK
+          content: 
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/PaymentMethodList" 
+        '401':
+          $ref: "#/components/responses/Unauthorized"
+        '500':
+          $ref: "#/components/responses/InternalServerError"
+
+    post: 
+      tags: 
+        -  payment_methods
+      summary: Create Payment Method
+      operationId: createPaymentMethod
+      description: "Registers a payment method for a customer from a provider-issued token. Ledgerline never receives raw card or bank-account data — only the opaque `token`, from which it stores a masked summary (last 4 digits and brand for cards, or the mandate reference for SEPA Direct Debit). Requires an `Idempotency-Key` header so a retry never registers a duplicate. Returns the created payment method."
+      parameters: 
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody: 
+        required: true
+        content: 
+          application/json: 
+            schema: 
+              $ref: "#/components/schemas/PaymentMethodCreate"
+      responses: 
+        '201':
+          description: Created
+          headers: 
+            Location:
+              $ref: "#/components/headers/Location"
+          content: 
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/PaymentMethod" 
+        '400':
+          $ref: "#/components/responses/BadRequest"
+        '401':
+          $ref: "#/components/responses/Unauthorized"
+        '422':
+          $ref: "#/components/responses/UnprocessableEntity"
+        '500':
+          $ref: "#/components/responses/InternalServerError"
+
+  /payment_methods/{paymentMethodId}:
+    get: 
+      tags: 
+        -  payment_methods
+      summary: Get a Payment Method
+      operationId: getPaymentMethod
+      description: "Retrieves a single payment method by id, returning only its masked details. Returns 404 if no payment method with that id exists in the current account. Read-only."
+      parameters: 
+        - name: paymentMethodId
+          in: path
+          required: true
+          schema: 
+            $ref: "#/components/schemas/PaymentMethodId"
+      responses: 
+        '200':
+          description: OK
+          content: 
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/PaymentMethod" 
+        '401':
+          $ref: "#/components/responses/Unauthorized"
+        '404':
+          $ref: "#/components/responses/NotFound"
+        '500':
+          $ref: "#/components/responses/InternalServerError"
+
+  /payments:
+    get: 
+      tags: 
+        -  payments
+      summary: List Payments 
+      operationId: listPayments
+      description: "Returns a paginated list of payment records in the current account, most recently created first. Filter by `customer`, `subscription`, or `status`. Payments are created automatically by Ledgerline when a subscription's billing period falls due — they cannot be created through the API. A payment in `requires_action` status is awaiting Strong Customer Authentication (PSD2/SCA); see its `next_action`. Read-only."
+      parameters: 
+        - $ref: "#/components/parameters/AfterParam"
+        - $ref: "#/components/parameters/LimitParam"
+        - $ref: "#/components/parameters/CustomerFilter"
+        - $ref: "#/components/parameters/PaymentStatusFilter"
+        - $ref: "#/components/parameters/SubscriptionFilter"
+      responses: 
+        '200':
+          description: OK
+          content: 
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/PaymentList" 
+        '401':
+          $ref: "#/components/responses/Unauthorized"
+        '500':
+          $ref: "#/components/responses/InternalServerError"
+
+  /payments/{paymentId}:
+    get: 
+      tags: 
+        -  payments
+      summary: Get a Payment
+      operationId: getPayment
+      description: "Retrieves a single payment by id, including its status and, for failed payments, the `failure_reason`. Returns 404 if no payment with that id exists in the current account. Read-only."
+      parameters:
+        - name: paymentId
+          in: path
+          required: true
+          schema: 
+            $ref: "#/components/schemas/PaymentId"
+      responses: 
+        '200':
+          description: OK
+          content: 
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/Payment" 
         '401':
           $ref: "#/components/responses/Unauthorized"
         '404':
@@ -880,12 +1029,26 @@ components:
       schema: 
         $ref: "#/components/schemas/CustomerId"
 
-    StatusFilter:
+    SubscriptionStatusFilter:
       in: query
       name: status
       required: false
       schema: 
         $ref: "#/components/schemas/SubscriptionStatus"
+
+    PaymentStatusFilter:
+      in: query
+      name: status
+      required: false
+      schema: 
+        $ref: "#/components/schemas/PaymentStatus"
+
+    SubscriptionFilter:
+      in: query
+      name: subscription
+      required: false
+      schema: 
+        $ref: "#/components/schemas/SubscriptionId"
 
   responses: 
     BadRequest:
