@@ -607,6 +607,10 @@ components:
         -  customer
         -  plan
 
+    SubscriptionStatus:
+      type: string
+      enum: [incomplete, incomplete_expired, trialing, active, past_due, canceled]
+
     CustomerId:
       type: string
       pattern: '^cus_[a-zA-Z0-9]+$'
@@ -622,9 +626,81 @@ components:
       pattern: '^sub_[a-zA-Z0-9]+$'
       example: sub_abc123
 
-    SubscriptionStatus:
+    PaymentMethodId:
       type: string
-      enum: [incomplete, incomplete_expired, trialing, active, past_due, canceled]
+      pattern: '^pm_[a-zA-Z0-9]+$'
+      example: pm_abc123
+
+    PaymentMethod:
+      type: object
+      additionalProperties: true
+      properties: 
+        id:
+          $ref: "#/components/schemas/PaymentMethodId"
+        object:
+          type: string
+          const: payment_method
+        created:
+          type: string
+          format: date-time
+        livemode:
+          type: boolean
+        customer:
+          $ref: "#/components/schemas/CustomerId"
+        type:
+          $ref: "#/components/schemas/PaymentMethodType"
+        sepa_debit:
+          description: Masked SEPA details. Present only when type is sepa_debit. The full IBAN is never stored — only the last 4 digits and the mandate reference.
+          type: object
+          properties: 
+            last4:
+              type: string
+            mandate_reference:
+              type: string
+        card:
+          description: Masked CARD details. Present only when type is card. The full PAN is never stored — only the last 4 digits and the expiration month and year.
+          type: object
+          properties: 
+            brand:
+              type: string
+              example: visa
+            last4:
+              type: string
+            exp_mont:
+              type: integer
+            exp_year:
+              type: integer
+        metadata:
+          $ref: "#/components/schemas/Metadata"
+      required: 
+        -  id
+        -  object
+        -  created
+        -  livemode
+        -  type
+        -  customer
+
+    PaymentMethodCreate:
+      type: object
+      additionalProperties: false
+      properties: 
+        customer:
+          $ref: "#/components/schemas/CustomerId"
+        type:
+          $ref: "#/components/schemas/PaymentMethodType"
+        token:
+          type: string
+          description: "Opaque single-use token from the licensed payment provider's client SDK, representing the customer's card or bank account. Ledgerline never receives raw card or IBAN data."
+        metadata:
+          $ref: "#/components/schemas/Metadata"
+      required: 
+        -  customer
+        -  type
+        -  token
+
+    PaymentMethodType:
+      type: string
+      enum: [sepa_debit, card]
 
     ProblemDetail: 
       type: object
