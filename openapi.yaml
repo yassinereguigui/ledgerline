@@ -432,10 +432,7 @@ components:
         amount:
           type: integer
         currency:
-          type: string
-          pattern: "^[a-z]{3}$"
-          description: ISO 4217
-          example: eur
+          $ref: "#/components/schemas/Currency"
         interval:
           type: string
           enum: [day, week, month, year]
@@ -487,10 +484,7 @@ components:
         amount:
           type: integer
         currency:
-          type: string
-          pattern: ^[a-z]{3}$
-          description: ISO 4217
-          example: eur
+          $ref: "#/components/schemas/Currency"
         interval:
           type: string
           enum: [day, week, month, year]
@@ -607,30 +601,6 @@ components:
         -  customer
         -  plan
 
-    SubscriptionStatus:
-      type: string
-      enum: [incomplete, incomplete_expired, trialing, active, past_due, canceled]
-
-    CustomerId:
-      type: string
-      pattern: '^cus_[a-zA-Z0-9]+$'
-      example: cus_abc123
-
-    PlanId:
-      type: string
-      pattern: '^plan_[a-zA-Z0-9]+$'
-      example: plan_abc123
-
-    SubscriptionId:
-      type: string
-      pattern: '^sub_[a-zA-Z0-9]+$'
-      example: sub_abc123
-
-    PaymentMethodId:
-      type: string
-      pattern: '^pm_[a-zA-Z0-9]+$'
-      example: pm_abc123
-
     PaymentMethod:
       type: object
       additionalProperties: true
@@ -666,7 +636,7 @@ components:
               example: visa
             last4:
               type: string
-            exp_mont:
+            exp_month:
               type: integer
             exp_year:
               type: integer
@@ -697,6 +667,144 @@ components:
         -  customer
         -  type
         -  token
+
+    PaymentMethodList:
+      type: object
+      additionalProperties: true
+      properties: 
+        object:
+          type: string
+          const: list
+        data:
+          type: array
+          items: 
+            $ref: "#/components/schemas/PaymentMethod"
+        has_more:
+          type: boolean
+        url:
+          type: string
+          example: /v1/payment_methods
+      required: 
+        -  object
+        -  data
+        -  has_more
+        -  url
+
+    Payment:
+      type: object
+      additionalProperties: true
+      properties: 
+        id:
+          $ref: "#/components/schemas/PaymentId"
+        object:
+          type: string
+          const: payment
+        created:
+          type: string
+          format: date-time
+        livemode:
+          type: boolean
+        status:
+          $ref: "#/components/schemas/PaymentStatus"
+        amount:
+          type: integer
+        currency:
+          $ref: "#/components/schemas/Currency"
+        customer:
+          $ref: "#/components/schemas/CustomerId"
+        subscription:
+          $ref: "#/components/schemas/SubscriptionId"
+        payment_method:
+          oneOf: 
+            -  $ref: "#/components/schemas/PaymentMethodId"
+            -  {type: "null"}
+        next_action:
+          type: ["object", "null"]
+          properties: 
+            type:
+              type: string
+              const: redirect
+            redirect_url:
+              type: string
+              format: uri
+        failure_reason:
+          type: ["string", "null"]
+        metadata:
+          $ref: "#/components/schemas/Metadata"
+      required: 
+        -  id
+        -  object
+        -  created
+        -  livemode
+        -  status
+        -  customer
+        -  amount
+        -  currency
+        -  subscription
+        -  payment_method
+        -  next_action
+        -  failure_reason
+
+    PaymentList:
+      type: object
+      additionalProperties: true
+      properties: 
+        object:
+          type: string
+          const: list
+        data:
+          type: array
+          items: 
+            $ref: "#/components/schemas/Payment"
+        has_more:
+          type: boolean
+        url:
+          type: string
+          example: /v1/payments
+      required: 
+        -  object
+        -  data
+        -  has_more
+        -  url
+        
+    PaymentStatus:
+      type: string
+      enum: [processing, requires_action, succeeded, failed, canceled]
+
+    SubscriptionStatus:
+      type: string
+      enum: [incomplete, incomplete_expired, trialing, active, past_due, canceled]
+
+    CustomerId:
+      type: string
+      pattern: '^cus_[a-zA-Z0-9]+$'
+      example: cus_abc123
+
+    PlanId:
+      type: string
+      pattern: '^plan_[a-zA-Z0-9]+$'
+      example: plan_abc123
+
+    SubscriptionId:
+      type: string
+      pattern: '^sub_[a-zA-Z0-9]+$'
+      example: sub_abc123
+
+    PaymentMethodId:
+      type: string
+      pattern: '^pm_[a-zA-Z0-9]+$'
+      example: pm_abc123
+
+    PaymentId:
+      type: string
+      pattern: '^pay_[a-zA-Z0-9]+$'
+      example: pay_abc123
+
+    Currency:
+      type: string
+      pattern: "^[a-z]{3}$"
+      description: ISO 4217
+      example: eur
 
     PaymentMethodType:
       type: string
