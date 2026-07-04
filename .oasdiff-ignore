@@ -1,4 +1,0 @@
-in API POST /customers added required request body
-in API POST /plans added required request body
-in API GET /customers/{customerId} added the pattern `^cus_[a-zA-Z0-9]+$` to the `path` request parameter `customerId`
-in API GET /plans/{planId} added the pattern `^plan_[a-zA-Z0-9]+$` to the `path` request parameter `planId`
