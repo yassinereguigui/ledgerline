@@ -40,7 +40,7 @@ jobs:
         run: |
           docker run --rm \
           -v $(pwd):/work \
-          tufin/oasdiff:1.21.0 breaking \
+          tufin/oasdiff:v1.21.0 breaking \
           /work/openapi-base.yaml \
           /work/openapi.yaml \
           --fail-on ERR \
