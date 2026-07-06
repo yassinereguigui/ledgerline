@@ -16,3 +16,5 @@ rules:
       function: pattern
       functionOptions:
         match: "^[a-z][a-zA-Z0-9]*$"
+  oas3-valid-schema-example: error
+  oas3-valid-media-example: error

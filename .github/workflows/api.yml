@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: read
+  pull-requests: write
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -45,6 +46,23 @@ jobs:
           /work/openapi.yaml \
           --fail-on ERR \
           --err-ignore /work/.oasdiff-ignore
+
+      - name: Post API changelog comment
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          CHANGELOG=$(docker run --rm -v "$(pwd):/work" \
+            tufin/oasdiff:v1.21.0 changelog \
+            /work/openapi-base.yaml /work/openapi.yaml)
+          [ -z "$CHANGELOG" ] && CHANGELOG="No API changes detected."
+          {
+            echo "## API changelog (vs \`main\`)"
+            echo '```'
+            echo "$CHANGELOG"
+            echo '```'
+          } > changelog.md
+          gh pr comment "${{ github.event.pull_request.number }}" \
+            --edit-last --create-if-none --body-file changelog.md
 
   mock:
     name: Mock Server Validation
