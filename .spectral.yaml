@@ -1,4 +1,6 @@
-extends: ["spectral:oas"]
+extends:
+  - "spectral:oas"
+  - "@stoplight/spectral-owasp-ruleset"
 rules:
   operation-tag-defined: true
   operation-summary:
@@ -18,3 +20,10 @@ rules:
         match: "^[a-z][a-zA-Z0-9]*$"
   oas3-valid-schema-example: error
   oas3-valid-media-example: error
+  "owasp:api8:2023-define-cors-origin": off
+  "owasp:api4:2023-string-limit": warn
+  "owasp:api4:2023-integer-limit": warn
+  "owasp:api4:2023-integer-format": warn
+  "owasp:api4:2023-array-limit": warn
+  "owasp:api4:2023-rate-limit": warn
+  "owasp:api9:2023-inventory-access": warn
