@@ -20,10 +20,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Run Spectral
-        uses: stoplightio/spectral-action@6416fd018ae38e60136775066eb3e98172143141
+      - uses: actions/setup-node@v4
         with:
-          file_glob: openapi.yaml
+          node-version: "20"
+          cache: npm
+
+      - run: npm ci
+
+      - name: Run Spectral
+        run: npx spectral lint openapi.yaml --ruleset .spectral.yaml --format github-actions
 
   breaking-changes:
     name: Breaking Change Detection
@@ -74,13 +79,13 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
+          cache: npm
 
-      - name: Install Prism
-        run: npm install -g @stoplight/prism-cli@5.15.11
+      - run: npm ci
 
       - name: Validate spec via mock
         run: |
-          prism mock openapi.yaml --errors &
+          npx prism mock openapi.yaml --errors &
           sleep 3
           curl -sf --retry 5 --retry-delay 1 http://localhost:4010/customers \
               -H "Authorization: Bearer ll_test_mock" \

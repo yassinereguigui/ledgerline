@@ -9,3 +9,5 @@ CLAUDE.md
 docs/
 
 .postman/resources.yaml
+
+node_modules
