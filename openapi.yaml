@@ -25,6 +25,8 @@ tags:
     description: managing payment methods
   - name: payments
     description: managing payments
+  - name: events
+    description: managing events
 
 security:
   - apiKey: []
@@ -440,6 +442,56 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Payment"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /events:
+    get:
+      tags:
+        - events
+      summary: List Events
+      operationId: listEvents
+      description: "Returns a paginated list of events in the current account, most recently created first. Filter by `type`. Page through results with `starting_after`. Read-only."
+      parameters:
+        - $ref: "#/components/parameters/AfterParam"
+        - $ref: "#/components/parameters/LimitParam"
+        - $ref: "#/components/parameters/EventTypeFilter"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EventList"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /events/{eventId}:
+    get:
+      tags:
+        - events
+      summary: Get an Event
+      operationId: getEvent
+      description: "Retrieves a single event by id. Returns 404 if no event with that id exists in the current account. Read-only."
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/EventId"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Event"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "404":
@@ -916,6 +968,77 @@ components:
         - has_more
         - url
 
+    Event:
+      type: object
+      additionalProperties: true
+      properties:
+        id:
+          $ref: "#/components/schemas/EventId"
+        object:
+          type: string
+          const: event
+        created:
+          type: string
+          format: date-time
+        livemode:
+          type: boolean
+        type:
+          $ref: "#/components/schemas/EventType"
+        api_version:
+          type: string
+          example: 1.0.0
+          description: The API version this event payload was rendered with.
+        data:
+          type: object
+          required:
+            - object
+          properties:
+            object:
+              oneOf:
+                - $ref: "#/components/schemas/Customer"
+                - $ref: "#/components/schemas/Plan"
+                - $ref: "#/components/schemas/Subscription"
+                - $ref: "#/components/schemas/Payment"
+                - $ref: "#/components/schemas/PaymentMethod"
+              discriminator:
+                propertyName: object
+                mapping:
+                  customer: "#/components/schemas/Customer"
+                  plan: "#/components/schemas/Plan"
+                  subscription: "#/components/schemas/Subscription"
+                  payment: "#/components/schemas/Payment"
+                  payment_method: "#/components/schemas/PaymentMethod"
+      required:
+        - id
+        - object
+        - created
+        - livemode
+        - type
+        - api_version
+        - data
+
+    EventList:
+      type: object
+      additionalProperties: true
+      properties:
+        object:
+          type: string
+          const: list
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Event"
+        has_more:
+          type: boolean
+        url:
+          type: string
+          example: /v1/events
+      required:
+        - object
+        - data
+        - has_more
+        - url
+
     PaymentStatus:
       type: string
       enum: [processing, requires_action, succeeded, failed, canceled]
@@ -949,6 +1072,24 @@ components:
       type: string
       pattern: "^pay_[a-zA-Z0-9]+$"
       example: pay_abc123
+
+    EventId:
+      type: string
+      pattern: "^evt_[a-zA-Z0-9]+$"
+      example: evt_abc123
+
+    EventType:
+      type: string
+      enum:
+        - customer.created
+        - plan.created
+        - subscription.created
+        - subscription.updated
+        - subscription.canceled
+        - payment_method.created
+        - payment.succeeded
+        - payment.failed
+        - payment.requires_action
 
     Currency:
       type: string
@@ -1050,6 +1191,13 @@ components:
       required: false
       schema:
         $ref: "#/components/schemas/SubscriptionId"
+
+    EventTypeFilter:
+      in: query
+      name: type
+      required: false
+      schema:
+        $ref: "#/components/schemas/EventType"
 
   responses:
     BadRequest:
