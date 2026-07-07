@@ -1,14 +1,14 @@
 openapi: 3.1.0
 
-info: 
+info:
   title: Ledgerline
-  version: 1.0.0  
+  version: 1.0.0
   description: Ledgerline is a recurring billing and payment collection API that lets small European businesses — gyms, clinics, schools, agencies — automatically charge their customers on a schedule without handling card data themselves. It sits between a merchant and a licensed payment provider, turning the painful, manual work of collecting recurring payments into something a business or their developer can plug in and trust.
-  contact: 
+  contact:
     name: Yassine Reguigui
     email: reguiguiyassine1@gmail.com
-    
-servers: 
+
+servers:
   - url: https://api.ledgerline.com/v1
     description: Production
   - url: https://sandbox.api.ledgerline.com/v1
@@ -25,405 +25,407 @@ tags:
     description: managing payment methods
   - name: payments
     description: managing payments
+  - name: events
+    description: managing events
 
-security: 
-  -  apiKey: []
+security:
+  - apiKey: []
 
-paths: 
+paths:
   /customers:
-    get: 
-      tags: 
-        -  customers
-      summary: List Customers 
+    get:
+      tags:
+        - customers
+      summary: List Customers
       operationId: listCustomers
       description: "Returns a paginated list of customers in the current account, most recently created first. Page through results with `starting_after` set to the last id of the previous page. Read-only; no side effects."
-      parameters: 
+      parameters:
         - $ref: "#/components/parameters/AfterParam"
         - $ref: "#/components/parameters/LimitParam"
-      responses: 
-        '200':
+      responses:
+        "200":
           description: OK
-          content: 
+          content:
             application/json:
-              schema: 
-                $ref: "#/components/schemas/CustomerList" 
-        '401':
+              schema:
+                $ref: "#/components/schemas/CustomerList"
+        "401":
           $ref: "#/components/responses/Unauthorized"
-        '500':
+        "500":
           $ref: "#/components/responses/InternalServerError"
 
-    post: 
-      tags: 
-        -  customers
+    post:
+      tags:
+        - customers
       summary: Create Customer
       operationId: createCustomer
       description: "Creates a customer — the account holder that plans, subscriptions, and payment methods attach to. Requires an `Idempotency-Key` header so a retried request never creates a duplicate customer. Returns the full created customer, including its server-assigned `id`."
-      parameters: 
+      parameters:
         - $ref: "#/components/parameters/IdempotencyKey"
-      requestBody: 
+      requestBody:
         required: true
-        content: 
-          application/json: 
-            schema: 
+        content:
+          application/json:
+            schema:
               $ref: "#/components/schemas/CustomerCreate"
-      responses: 
-        '201':
+      responses:
+        "201":
           description: Created
-          headers: 
+          headers:
             Location:
               $ref: "#/components/headers/Location"
-          content: 
+          content:
             application/json:
-              schema: 
-                $ref: "#/components/schemas/Customer" 
-        '400':
+              schema:
+                $ref: "#/components/schemas/Customer"
+        "400":
           $ref: "#/components/responses/BadRequest"
-        '401':
+        "401":
           $ref: "#/components/responses/Unauthorized"
-        '422':
+        "422":
           $ref: "#/components/responses/UnprocessableEntity"
-        '500':
+        "500":
           $ref: "#/components/responses/InternalServerError"
 
   /customers/{customerId}:
-    get: 
-      tags: 
-        -  customers
+    get:
+      tags:
+        - customers
       summary: Get a Customer
       operationId: getCustomer
       description: "Retrieves a single customer by id. Returns 404 if no customer with that id exists in the current account. Read-only."
-      parameters: 
+      parameters:
         - name: customerId
           in: path
           required: true
-          schema: 
+          schema:
             $ref: "#/components/schemas/CustomerId"
-      responses: 
-        '200':
+      responses:
+        "200":
           description: OK
-          content: 
+          content:
             application/json:
-              schema: 
-                $ref: "#/components/schemas/Customer" 
-        '401':
+              schema:
+                $ref: "#/components/schemas/Customer"
+        "401":
           $ref: "#/components/responses/Unauthorized"
-        '404':
+        "404":
           $ref: "#/components/responses/NotFound"
-        '500':
+        "500":
           $ref: "#/components/responses/InternalServerError"
 
   /plans:
-    get: 
-      tags: 
-        -  plans
+    get:
+      tags:
+        - plans
       summary: List Plans
       operationId: listPlans
       description: "Returns a paginated list of billing plans in the current account, most recently created first. Page through results with `starting_after`. Read-only; no side effects."
-      parameters: 
+      parameters:
         - $ref: "#/components/parameters/LimitParam"
         - $ref: "#/components/parameters/AfterParam"
-      responses: 
-        '200':
+      responses:
+        "200":
           description: OK
-          content: 
+          content:
             application/json:
-              schema: 
-                $ref: "#/components/schemas/PlanList" 
-        '401':
+              schema:
+                $ref: "#/components/schemas/PlanList"
+        "401":
           $ref: "#/components/responses/Unauthorized"
-        '500':
+        "500":
           $ref: "#/components/responses/InternalServerError"
 
-    post: 
-      tags: 
-        -  plans
+    post:
+      tags:
+        - plans
       summary: Create Plan
       operationId: createPlan
       description: "Creates a billing plan: a reusable price and recurrence (amount in the currency's minor units + ISO 4217 currency, plus an interval) that subscriptions reference. Requires an `Idempotency-Key` header so a retry never creates a duplicate plan. Returns the full created plan."
-      parameters: 
+      parameters:
         - $ref: "#/components/parameters/IdempotencyKey"
-      requestBody: 
+      requestBody:
         required: true
-        content: 
+        content:
           application/json:
-            schema: 
-              $ref: "#/components/schemas/PlanCreate" 
-      responses: 
-        '201':
+            schema:
+              $ref: "#/components/schemas/PlanCreate"
+      responses:
+        "201":
           description: Created
-          content: 
+          content:
             application/json:
-              schema: 
-                $ref: "#/components/schemas/Plan" 
-          headers: 
+              schema:
+                $ref: "#/components/schemas/Plan"
+          headers:
             Location:
-              $ref: "#/components/headers/Location" 
-        '400':
+              $ref: "#/components/headers/Location"
+        "400":
           $ref: "#/components/responses/BadRequest"
-        '401':
+        "401":
           $ref: "#/components/responses/Unauthorized"
-        '422':
+        "422":
           $ref: "#/components/responses/UnprocessableEntity"
-        '500':
+        "500":
           $ref: "#/components/responses/InternalServerError"
 
   /plans/{planId}:
-    get: 
-      tags: 
-        -  plans
+    get:
+      tags:
+        - plans
       summary: Get a Plan
       operationId: getPlan
       description: "Retrieves a single plan by id. Returns 404 if no plan with that id exists in the current account. Read-only."
-      parameters: 
+      parameters:
         - name: planId
           in: path
           required: true
-          schema: 
+          schema:
             $ref: "#/components/schemas/PlanId"
-      responses: 
-        '200':
+      responses:
+        "200":
           description: OK
-          content: 
+          content:
             application/json:
-              schema: 
-                $ref: "#/components/schemas/Plan" 
-        '401':
+              schema:
+                $ref: "#/components/schemas/Plan"
+        "401":
           $ref: "#/components/responses/Unauthorized"
-        '404':
+        "404":
           $ref: "#/components/responses/NotFound"
-        '500':
+        "500":
           $ref: "#/components/responses/InternalServerError"
 
   /subscriptions:
-    get: 
-      tags: 
-        -  subscriptions
-      summary: List Subscriptions 
+    get:
+      tags:
+        - subscriptions
+      summary: List Subscriptions
       operationId: listSubscriptions
       description: "Returns a paginated list of subscriptions in the current account, most recently created first. Filter by `customer` or by `status`. Page through results with `starting_after`. Read-only; no side effects."
-      parameters: 
+      parameters:
         - $ref: "#/components/parameters/AfterParam"
         - $ref: "#/components/parameters/LimitParam"
         - $ref: "#/components/parameters/CustomerFilter"
         - $ref: "#/components/parameters/SubscriptionStatusFilter"
-      responses: 
-        '200':
+      responses:
+        "200":
           description: OK
-          content: 
+          content:
             application/json:
-              schema: 
-                $ref: "#/components/schemas/SubscriptionList" 
-        '401':
+              schema:
+                $ref: "#/components/schemas/SubscriptionList"
+        "401":
           $ref: "#/components/responses/Unauthorized"
-        '500':
+        "500":
           $ref: "#/components/responses/InternalServerError"
 
-    post: 
-      tags: 
-        -  subscriptions
+    post:
+      tags:
+        - subscriptions
       summary: Create Subscription
       operationId: createSubscription
       description: "Subscribes a customer to a plan, starting the recurring billing cycle (optionally after a trial). Requires an `Idempotency-Key` header so a retry never creates a duplicate subscription. The subscription may begin in an `incomplete` or `trialing` state until the first payment or SEPA mandate is confirmed. Returns the full created subscription."
-      parameters: 
+      parameters:
         - $ref: "#/components/parameters/IdempotencyKey"
-      requestBody: 
+      requestBody:
         required: true
-        content: 
-          application/json: 
-            schema: 
+        content:
+          application/json:
+            schema:
               $ref: "#/components/schemas/SubscriptionCreate"
-      responses: 
-        '201':
+      responses:
+        "201":
           description: Created
-          headers: 
+          headers:
             Location:
               $ref: "#/components/headers/Location"
-          content: 
+          content:
             application/json:
-              schema: 
-                $ref: "#/components/schemas/Subscription" 
-        '400':
+              schema:
+                $ref: "#/components/schemas/Subscription"
+        "400":
           $ref: "#/components/responses/BadRequest"
-        '401':
+        "401":
           $ref: "#/components/responses/Unauthorized"
-        '422':
+        "422":
           $ref: "#/components/responses/UnprocessableEntity"
-        '500':
+        "500":
           $ref: "#/components/responses/InternalServerError"
 
   /subscriptions/{subscriptionId}:
-    get: 
-      tags: 
-        -  subscriptions
+    get:
+      tags:
+        - subscriptions
       summary: Get a Subscription
       operationId: getSubscription
       description: "Retrieves a single subscription by id, including its current status and billing period. Returns 404 if no subscription with that id exists in the current account. Read-only."
-      parameters: 
+      parameters:
         - name: subscriptionId
           in: path
           required: true
-          schema: 
+          schema:
             $ref: "#/components/schemas/SubscriptionId"
-      responses: 
-        '200':
+      responses:
+        "200":
           description: OK
-          content: 
+          content:
             application/json:
-              schema: 
-                $ref: "#/components/schemas/Subscription" 
-        '401':
+              schema:
+                $ref: "#/components/schemas/Subscription"
+        "401":
           $ref: "#/components/responses/Unauthorized"
-        '404':
+        "404":
           $ref: "#/components/responses/NotFound"
-        '500':
+        "500":
           $ref: "#/components/responses/InternalServerError"
 
-    delete: 
-      tags: 
-        -  subscriptions
+    delete:
+      tags:
+        - subscriptions
       summary: Delete a Subscription
       operationId: deleteSubscription
       description: "Cancels a subscription. Set `cancel_at_period_end=false` to end it immediately, or `true` to keep it active until the current billing period ends. This is a soft cancellation: the record is retained (status becomes `canceled`, with `canceled_at`/`ended_at` populated) and stays retrievable for history and reporting — it is not erased. Requires an `Idempotency-Key` header. Returns the updated subscription."
-      parameters: 
+      parameters:
         - name: subscriptionId
           in: path
           required: true
-          schema: 
+          schema:
             $ref: "#/components/schemas/SubscriptionId"
         - $ref: "#/components/parameters/IdempotencyKey"
         - name: cancel_at_period_end
           in: query
           required: true
-          schema: 
+          schema:
             type: boolean
-      responses: 
-        '200':
+      responses:
+        "200":
           description: OK
-          content: 
+          content:
             application/json:
-              schema: 
+              schema:
                 $ref: "#/components/schemas/Subscription"
-        '400':
+        "400":
           $ref: "#/components/responses/BadRequest"
-        '401':
+        "401":
           $ref: "#/components/responses/Unauthorized"
-        '404':
+        "404":
           $ref: "#/components/responses/NotFound"
-        '500':
+        "500":
           $ref: "#/components/responses/InternalServerError"
 
   /payment_methods:
-    get: 
-      tags: 
-        -  payment_methods
-      summary: List Payment Methods 
+    get:
+      tags:
+        - payment_methods
+      summary: List Payment Methods
       operationId: listPaymentMethods
       description: "Returns a paginated list of payment methods in the current account, most recently created first. Filter by `customer`. Page through results with `starting_after`. Only masked instrument details are ever returned — never full card or IBAN data. Read-only."
-      parameters: 
+      parameters:
         - $ref: "#/components/parameters/AfterParam"
         - $ref: "#/components/parameters/LimitParam"
         - $ref: "#/components/parameters/CustomerFilter"
-      responses: 
-        '200':
+      responses:
+        "200":
           description: OK
-          content: 
+          content:
             application/json:
-              schema: 
-                $ref: "#/components/schemas/PaymentMethodList" 
-        '401':
+              schema:
+                $ref: "#/components/schemas/PaymentMethodList"
+        "401":
           $ref: "#/components/responses/Unauthorized"
-        '500':
+        "500":
           $ref: "#/components/responses/InternalServerError"
 
-    post: 
-      tags: 
-        -  payment_methods
+    post:
+      tags:
+        - payment_methods
       summary: Create Payment Method
       operationId: createPaymentMethod
       description: "Registers a payment method for a customer from a provider-issued token. Ledgerline never receives raw card or bank-account data — only the opaque `token`, from which it stores a masked summary (last 4 digits and brand for cards, or the mandate reference for SEPA Direct Debit). Requires an `Idempotency-Key` header so a retry never registers a duplicate. Returns the created payment method."
-      parameters: 
+      parameters:
         - $ref: "#/components/parameters/IdempotencyKey"
-      requestBody: 
+      requestBody:
         required: true
-        content: 
-          application/json: 
-            schema: 
+        content:
+          application/json:
+            schema:
               $ref: "#/components/schemas/PaymentMethodCreate"
-      responses: 
-        '201':
+      responses:
+        "201":
           description: Created
-          headers: 
+          headers:
             Location:
               $ref: "#/components/headers/Location"
-          content: 
+          content:
             application/json:
-              schema: 
-                $ref: "#/components/schemas/PaymentMethod" 
-        '400':
+              schema:
+                $ref: "#/components/schemas/PaymentMethod"
+        "400":
           $ref: "#/components/responses/BadRequest"
-        '401':
+        "401":
           $ref: "#/components/responses/Unauthorized"
-        '422':
+        "422":
           $ref: "#/components/responses/UnprocessableEntity"
-        '500':
+        "500":
           $ref: "#/components/responses/InternalServerError"
 
   /payment_methods/{paymentMethodId}:
-    get: 
-      tags: 
-        -  payment_methods
+    get:
+      tags:
+        - payment_methods
       summary: Get a Payment Method
       operationId: getPaymentMethod
       description: "Retrieves a single payment method by id, returning only its masked details. Returns 404 if no payment method with that id exists in the current account. Read-only."
-      parameters: 
+      parameters:
         - name: paymentMethodId
           in: path
           required: true
-          schema: 
+          schema:
             $ref: "#/components/schemas/PaymentMethodId"
-      responses: 
-        '200':
+      responses:
+        "200":
           description: OK
-          content: 
+          content:
             application/json:
-              schema: 
-                $ref: "#/components/schemas/PaymentMethod" 
-        '401':
+              schema:
+                $ref: "#/components/schemas/PaymentMethod"
+        "401":
           $ref: "#/components/responses/Unauthorized"
-        '404':
+        "404":
           $ref: "#/components/responses/NotFound"
-        '500':
+        "500":
           $ref: "#/components/responses/InternalServerError"
 
   /payments:
-    get: 
-      tags: 
-        -  payments
-      summary: List Payments 
+    get:
+      tags:
+        - payments
+      summary: List Payments
       operationId: listPayments
       description: "Returns a paginated list of payment records in the current account, most recently created first. Filter by `customer`, `subscription`, or `status`. Payments are created automatically by Ledgerline when a subscription's billing period falls due — they cannot be created through the API. A payment in `requires_action` status is awaiting Strong Customer Authentication (PSD2/SCA); see its `next_action`. Read-only."
-      parameters: 
+      parameters:
         - $ref: "#/components/parameters/AfterParam"
         - $ref: "#/components/parameters/LimitParam"
         - $ref: "#/components/parameters/CustomerFilter"
         - $ref: "#/components/parameters/PaymentStatusFilter"
         - $ref: "#/components/parameters/SubscriptionFilter"
-      responses: 
-        '200':
+      responses:
+        "200":
           description: OK
-          content: 
+          content:
             application/json:
-              schema: 
-                $ref: "#/components/schemas/PaymentList" 
-        '401':
+              schema:
+                $ref: "#/components/schemas/PaymentList"
+        "401":
           $ref: "#/components/responses/Unauthorized"
-        '500':
+        "500":
           $ref: "#/components/responses/InternalServerError"
 
   /payments/{paymentId}:
-    get: 
-      tags: 
-        -  payments
+    get:
+      tags:
+        - payments
       summary: Get a Payment
       operationId: getPayment
       description: "Retrieves a single payment by id, including its status and, for failed payments, the `failure_reason`. Returns 404 if no payment with that id exists in the current account. Read-only."
@@ -431,41 +433,91 @@ paths:
         - name: paymentId
           in: path
           required: true
-          schema: 
+          schema:
             $ref: "#/components/schemas/PaymentId"
-      responses: 
-        '200':
+      responses:
+        "200":
           description: OK
-          content: 
+          content:
             application/json:
-              schema: 
-                $ref: "#/components/schemas/Payment" 
-        '401':
+              schema:
+                $ref: "#/components/schemas/Payment"
+        "401":
           $ref: "#/components/responses/Unauthorized"
-        '404':
+        "404":
           $ref: "#/components/responses/NotFound"
-        '500':
+        "500":
           $ref: "#/components/responses/InternalServerError"
 
-components: 
-  securitySchemes: 
-    apiKey: 
+  /events:
+    get:
+      tags:
+        - events
+      summary: List Events
+      operationId: listEvents
+      description: "Returns a paginated list of events in the current account, most recently created first. Filter by `type`. Page through results with `starting_after`. Read-only."
+      parameters:
+        - $ref: "#/components/parameters/AfterParam"
+        - $ref: "#/components/parameters/LimitParam"
+        - $ref: "#/components/parameters/EventTypeFilter"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EventList"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /events/{eventId}:
+    get:
+      tags:
+        - events
+      summary: Get an Event
+      operationId: getEvent
+      description: "Retrieves a single event by id. Returns 404 if no event with that id exists in the current account. Read-only."
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/EventId"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Event"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+components:
+  securitySchemes:
+    apiKey:
       type: http
       scheme: bearer
       bearerFormat: APIKey
       description: Authenticate with your API key. Use ll_live_... keys for production, ll_test_... for sandbox.
 
-  schemas: 
-    Customer: 
+  schemas:
+    Customer:
       type: object
-      required: 
-        -  id
-        -  object
-        -  created
-        -  livemode
-        -  email
+      required:
+        - id
+        - object
+        - created
+        - livemode
+        - email
       additionalProperties: true
-      properties: 
+      properties:
         id:
           $ref: "#/components/schemas/CustomerId"
         object:
@@ -493,13 +545,13 @@ components:
 
     Address:
       type: object
-      required: 
-        -  country
+      required:
+        - country
       additionalProperties: true
-      properties: 
+      properties:
         country:
           type: string
-          pattern: '^[A-Z]{2}$'
+          pattern: "^[A-Z]{2}$"
           description: Two-letter ISO 3166-1 alpha-2 country code.
           example: NL
         line1:
@@ -515,18 +567,18 @@ components:
 
     CustomerList:
       type: object
-      required: 
-        -  object
-        -  data
-        -  has_more
-        -  url
-      properties: 
+      required:
+        - object
+        - data
+        - has_more
+        - url
+      properties:
         object:
           type: string
           const: "list"
         data:
           type: array
-          items: 
+          items:
             $ref: "#/components/schemas/Customer"
         has_more:
           type: boolean
@@ -537,9 +589,9 @@ components:
     CustomerCreate:
       type: object
       additionalProperties: false
-      required: 
-        -  email
-      properties: 
+      required:
+        - email
+      properties:
         email:
           type: string
           format: email
@@ -557,15 +609,15 @@ components:
     Metadata:
       type: object
       description: >-
-            Key-value pairs you can attach to store your own identifiers or notes. Ledgerline never interprets these. Useful for linking a resource to a record in your system.
-      additionalProperties: 
+        Key-value pairs you can attach to store your own identifiers or notes. Ledgerline never interprets these. Useful for linking a resource to a record in your system.
+      additionalProperties:
         type: string
         maxLength: 500
 
     Plan:
       type: object
       additionalProperties: true
-      properties: 
+      properties:
         id:
           $ref: "#/components/schemas/PlanId"
         object:
@@ -593,43 +645,43 @@ components:
           type: boolean
         metadata:
           $ref: "#/components/schemas/Metadata"
-      required: 
-        -  id
-        -  amount
-        -  interval
-        -  object
-        -  created
-        -  livemode
-        -  currency
-        -  interval_count
-        -  active
+      required:
+        - id
+        - amount
+        - interval
+        - object
+        - created
+        - livemode
+        - currency
+        - interval_count
+        - active
 
     PlanList:
       type: object
       additionalProperties: true
-      properties: 
+      properties:
         object:
           type: string
           const: list
         data:
           type: array
-          items: 
+          items:
             $ref: "#/components/schemas/Plan"
         has_more:
           type: boolean
         url:
           type: string
           example: /v1/plans
-      required: 
-        -  object
-        -  data
-        -  has_more
-        -  url
+      required:
+        - object
+        - data
+        - has_more
+        - url
 
     PlanCreate:
       type: object
       additionalProperties: false
-      properties: 
+      properties:
         amount:
           type: integer
         currency:
@@ -648,15 +700,15 @@ components:
           type: string
         metadata:
           $ref: "#/components/schemas/Metadata"
-      required: 
-        -  amount
-        -  currency
-        -  interval
+      required:
+        - amount
+        - currency
+        - interval
 
     Subscription:
       type: object
       additionalProperties: true
-      properties: 
+      properties:
         id:
           $ref: "#/components/schemas/SubscriptionId"
         object:
@@ -698,45 +750,45 @@ components:
           $ref: "#/components/schemas/CustomerId"
         plan:
           $ref: "#/components/schemas/PlanId"
-      required: 
-        -  id
-        -  object
-        -  created
-        -  livemode
-        -  customer
-        -  plan
-        -  status
-        -  start_date
-        -  current_period_start
-        -  current_period_end
-        -  cancel_at_period_end
+      required:
+        - id
+        - object
+        - created
+        - livemode
+        - customer
+        - plan
+        - status
+        - start_date
+        - current_period_start
+        - current_period_end
+        - cancel_at_period_end
 
     SubscriptionList:
       type: object
       additionalProperties: true
-      properties: 
+      properties:
         object:
           type: string
           const: list
         data:
           type: array
-          items: 
+          items:
             $ref: "#/components/schemas/Subscription"
         has_more:
           type: boolean
         url:
           type: string
           example: /v1/subscriptions
-      required: 
-        -  object
-        -  data
-        -  has_more
-        -  url
+      required:
+        - object
+        - data
+        - has_more
+        - url
 
     SubscriptionCreate:
       type: object
       additionalProperties: false
-      properties: 
+      properties:
         customer:
           $ref: "#/components/schemas/CustomerId"
         plan:
@@ -746,14 +798,14 @@ components:
           minimum: 1
         metadata:
           $ref: "#/components/schemas/Metadata"
-      required: 
-        -  customer
-        -  plan
+      required:
+        - customer
+        - plan
 
     PaymentMethod:
       type: object
       additionalProperties: true
-      properties: 
+      properties:
         id:
           $ref: "#/components/schemas/PaymentMethodId"
         object:
@@ -771,7 +823,7 @@ components:
         sepa_debit:
           description: Masked SEPA details. Present only when type is sepa_debit. The full IBAN is never stored — only the last 4 digits and the mandate reference.
           type: object
-          properties: 
+          properties:
             last4:
               type: string
             mandate_reference:
@@ -779,7 +831,7 @@ components:
         card:
           description: Masked CARD details. Present only when type is card. The full PAN is never stored — only the last 4 digits and the expiration month and year.
           type: object
-          properties: 
+          properties:
             brand:
               type: string
               example: visa
@@ -791,18 +843,18 @@ components:
               type: integer
         metadata:
           $ref: "#/components/schemas/Metadata"
-      required: 
-        -  id
-        -  object
-        -  created
-        -  livemode
-        -  type
-        -  customer
+      required:
+        - id
+        - object
+        - created
+        - livemode
+        - type
+        - customer
 
     PaymentMethodCreate:
       type: object
       additionalProperties: false
-      properties: 
+      properties:
         customer:
           $ref: "#/components/schemas/CustomerId"
         type:
@@ -812,37 +864,37 @@ components:
           description: "Opaque single-use token from the licensed payment provider's client SDK, representing the customer's card or bank account. Ledgerline never receives raw card or IBAN data."
         metadata:
           $ref: "#/components/schemas/Metadata"
-      required: 
-        -  customer
-        -  type
-        -  token
+      required:
+        - customer
+        - type
+        - token
 
     PaymentMethodList:
       type: object
       additionalProperties: true
-      properties: 
+      properties:
         object:
           type: string
           const: list
         data:
           type: array
-          items: 
+          items:
             $ref: "#/components/schemas/PaymentMethod"
         has_more:
           type: boolean
         url:
           type: string
           example: /v1/payment_methods
-      required: 
-        -  object
-        -  data
-        -  has_more
-        -  url
+      required:
+        - object
+        - data
+        - has_more
+        - url
 
     Payment:
       type: object
       additionalProperties: true
-      properties: 
+      properties:
         id:
           $ref: "#/components/schemas/PaymentId"
         object:
@@ -864,12 +916,12 @@ components:
         subscription:
           $ref: "#/components/schemas/SubscriptionId"
         payment_method:
-          oneOf: 
-            -  $ref: "#/components/schemas/PaymentMethodId"
-            -  {type: "null"}
+          oneOf:
+            - $ref: "#/components/schemas/PaymentMethodId"
+            - { type: "null" }
         next_action:
           type: ["object", "null"]
-          properties: 
+          properties:
             type:
               type: string
               const: redirect
@@ -880,74 +932,164 @@ components:
           type: ["string", "null"]
         metadata:
           $ref: "#/components/schemas/Metadata"
-      required: 
-        -  id
-        -  object
-        -  created
-        -  livemode
-        -  status
-        -  customer
-        -  amount
-        -  currency
-        -  subscription
-        -  payment_method
-        -  next_action
-        -  failure_reason
+      required:
+        - id
+        - object
+        - created
+        - livemode
+        - status
+        - customer
+        - amount
+        - currency
+        - subscription
+        - payment_method
+        - next_action
+        - failure_reason
 
     PaymentList:
       type: object
       additionalProperties: true
-      properties: 
+      properties:
         object:
           type: string
           const: list
         data:
           type: array
-          items: 
+          items:
             $ref: "#/components/schemas/Payment"
         has_more:
           type: boolean
         url:
           type: string
           example: /v1/payments
-      required: 
-        -  object
-        -  data
-        -  has_more
-        -  url
-        
+      required:
+        - object
+        - data
+        - has_more
+        - url
+
+    Event:
+      type: object
+      additionalProperties: true
+      properties:
+        id:
+          $ref: "#/components/schemas/EventId"
+        object:
+          type: string
+          const: event
+        created:
+          type: string
+          format: date-time
+        livemode:
+          type: boolean
+        type:
+          $ref: "#/components/schemas/EventType"
+        api_version:
+          type: string
+          example: 1.0.0
+          description: The API version this event payload was rendered with.
+        data:
+          type: object
+          required:
+            - object
+          properties:
+            object:
+              oneOf:
+                - $ref: "#/components/schemas/Customer"
+                - $ref: "#/components/schemas/Plan"
+                - $ref: "#/components/schemas/Subscription"
+                - $ref: "#/components/schemas/Payment"
+                - $ref: "#/components/schemas/PaymentMethod"
+              discriminator:
+                propertyName: object
+                mapping:
+                  customer: "#/components/schemas/Customer"
+                  plan: "#/components/schemas/Plan"
+                  subscription: "#/components/schemas/Subscription"
+                  payment: "#/components/schemas/Payment"
+                  payment_method: "#/components/schemas/PaymentMethod"
+      required:
+        - id
+        - object
+        - created
+        - livemode
+        - type
+        - api_version
+        - data
+
+    EventList:
+      type: object
+      additionalProperties: true
+      properties:
+        object:
+          type: string
+          const: list
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Event"
+        has_more:
+          type: boolean
+        url:
+          type: string
+          example: /v1/events
+      required:
+        - object
+        - data
+        - has_more
+        - url
+
     PaymentStatus:
       type: string
       enum: [processing, requires_action, succeeded, failed, canceled]
 
     SubscriptionStatus:
       type: string
-      enum: [incomplete, incomplete_expired, trialing, active, past_due, canceled]
+      enum:
+        [incomplete, incomplete_expired, trialing, active, past_due, canceled]
 
     CustomerId:
       type: string
-      pattern: '^cus_[a-zA-Z0-9]+$'
+      pattern: "^cus_[a-zA-Z0-9]+$"
       example: cus_abc123
 
     PlanId:
       type: string
-      pattern: '^plan_[a-zA-Z0-9]+$'
+      pattern: "^plan_[a-zA-Z0-9]+$"
       example: plan_abc123
 
     SubscriptionId:
       type: string
-      pattern: '^sub_[a-zA-Z0-9]+$'
+      pattern: "^sub_[a-zA-Z0-9]+$"
       example: sub_abc123
 
     PaymentMethodId:
       type: string
-      pattern: '^pm_[a-zA-Z0-9]+$'
+      pattern: "^pm_[a-zA-Z0-9]+$"
       example: pm_abc123
 
     PaymentId:
       type: string
-      pattern: '^pay_[a-zA-Z0-9]+$'
+      pattern: "^pay_[a-zA-Z0-9]+$"
       example: pay_abc123
+
+    EventId:
+      type: string
+      pattern: "^evt_[a-zA-Z0-9]+$"
+      example: evt_abc123
+
+    EventType:
+      type: string
+      enum:
+        - customer.created
+        - plan.created
+        - subscription.created
+        - subscription.updated
+        - subscription.canceled
+        - payment_method.created
+        - payment.succeeded
+        - payment.failed
+        - payment.requires_action
 
     Currency:
       type: string
@@ -959,14 +1101,14 @@ components:
       type: string
       enum: [sepa_debit, card]
 
-    ProblemDetail: 
+    ProblemDetail:
       type: object
-      required: 
-        -  type
-        -  title
-        -  status
+      required:
+        - type
+        - title
+        - status
       additionalProperties: true
-      properties: 
+      properties:
         type:
           type: string
           format: uri
@@ -985,23 +1127,23 @@ components:
           format: uri-reference
           example: "/v1/customers/cus_abc123"
 
-  headers: 
+  headers:
     Location:
       description: URL of the newly created resource
       required: true
-      schema: 
+      schema:
         type: string
         format: uri-reference
       example: /v1/customers/cus_abc123
 
-  parameters: 
-    IdempotencyKey: 
+  parameters:
+    IdempotencyKey:
       description: "A unique string per request, max 255 chars. Resubmitting with the same key returns the cached response without re-executing the operation."
       in: header
-      schema: 
+      schema:
         type: string
         minLength: 1
-        maxLength: 255 
+        maxLength: 255
       name: Idempotency-Key
       required: true
 
@@ -1009,7 +1151,7 @@ components:
       in: query
       name: limit
       required: false
-      schema: 
+      schema:
         type: integer
         minimum: 1
         maximum: 100
@@ -1019,87 +1161,94 @@ components:
       in: query
       name: starting_after
       required: false
-      schema: 
+      schema:
         type: string
-        
+
     CustomerFilter:
       in: query
       name: customer
       required: false
-      schema: 
+      schema:
         $ref: "#/components/schemas/CustomerId"
 
     SubscriptionStatusFilter:
       in: query
       name: status
       required: false
-      schema: 
+      schema:
         $ref: "#/components/schemas/SubscriptionStatus"
 
     PaymentStatusFilter:
       in: query
       name: status
       required: false
-      schema: 
+      schema:
         $ref: "#/components/schemas/PaymentStatus"
 
     SubscriptionFilter:
       in: query
       name: subscription
       required: false
-      schema: 
+      schema:
         $ref: "#/components/schemas/SubscriptionId"
 
-  responses: 
+    EventTypeFilter:
+      in: query
+      name: type
+      required: false
+      schema:
+        $ref: "#/components/schemas/EventType"
+
+  responses:
     BadRequest:
       description: "The request was malformed — missing required headers, invalid JSON, or a field failed basic format validation. Check the detail field for specifics."
       content:
         application/problem+json:
-          schema: 
-            $ref: "#/components/schemas/ProblemDetail" 
-    
+          schema:
+            $ref: "#/components/schemas/ProblemDetail"
+
     Unauthorized:
       description: "No valid API key was provided. Include your key in the Authorization: Bearer ll_live_... header."
-      content: 
-        application/problem+json: 
-          schema: 
+      content:
+        application/problem+json:
+          schema:
             $ref: "#/components/schemas/ProblemDetail"
 
     Forbidden:
       description: "The API key is valid but does not have permission to perform this action."
-      content: 
+      content:
         application/problem+json:
-          schema: 
+          schema:
             $ref: "#/components/schemas/ProblemDetail"
-            
+
     NotFound:
       description: "The requested resource does not exist or has been deleted."
-      content: 
-        application/problem+json: 
-          schema: 
+      content:
+        application/problem+json:
+          schema:
             $ref: "#/components/schemas/ProblemDetail"
 
     UnprocessableEntity:
       description: "The request was well-formed but failed semantic validation — for example, a required field is present but its value is logically invalid. Fix the values in detail before retrying."
-      content: 
+      content:
         application/problem+json:
-          schema: 
+          schema:
             $ref: "#/components/schemas/ProblemDetail"
-            
+
     TooManyRequests:
       description: "You have exceeded the rate limit. Wait for the duration in the Retry-After header before retrying."
-      content: 
-        application/problem+json: 
-          schema: 
+      content:
+        application/problem+json:
+          schema:
             $ref: "#/components/schemas/ProblemDetail"
-      headers: 
-        Retry-After: 
-          schema: 
+      headers:
+        Retry-After:
+          schema:
             type: integer
 
     InternalServerError:
       description: "An unexpected error occurred on Ledgerline's side. Retrying with exponential backoff is safe. If the problem persists, contact support with the instance value from the response body."
-      content: 
-        application/problem+json: 
-          schema: 
+      content:
+        application/problem+json:
+          schema:
             $ref: "#/components/schemas/ProblemDetail"
