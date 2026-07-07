@@ -27,6 +27,8 @@ tags:
     description: managing payments
   - name: events
     description: managing events
+  - name: webhook_endpoints
+    description: managing webhook endpoints
 
 security:
   - apiKey: []
@@ -492,6 +494,113 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Event"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /webhook_endpoints:
+    post:
+      tags:
+        - webhook_endpoints
+      summary: Create Webhook Endpoint
+      operationId: createWebhookEndpoint
+      description: "Registers a webhook endpoint, an HTTPS URL where Ledgerline will deliver events matching `enabled_events`. The response includes the signing `secret` exactly once. Store it to verify on every delivered event. Requires an `Idempotency-Key` header so a retry never creates a duplicate."
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WebhookEndpointCreate"
+      responses:
+        "201":
+          description: Created
+          headers:
+            Location:
+              $ref: "#/components/headers/Location"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WebhookEndpointWithSecret"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+    get:
+      tags:
+        - webhook_endpoints
+      summary: List Webhook Endpoints
+      operationId: listWebhookEndpoints
+      description: "Returns a paginated list of webhook endpoints in the current account, most recently created first. Page through results with `starting_after`. This is Read-only, the signing secret is never included here."
+      parameters:
+        - $ref: "#/components/parameters/AfterParam"
+        - $ref: "#/components/parameters/LimitParam"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WebhookEndpointList"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /webhook_endpoints/{webhookEndpointId}:
+    get:
+      tags:
+        - webhook_endpoints
+      summary: Get a Webhook Endpoint
+      operationId: getWebhookEndpoint
+      description: "Retrieves a single webhook endpoint by id. Returns 404 if no webhook endpoint with that id exists in the current account. This is Read-only, the signing secret is never included here."
+      parameters:
+        - name: webhookEndpointId
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/WebhookEndpointId"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WebhookEndpoint"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+    delete:
+      tags:
+        - webhook_endpoints
+      summary: Delete a Webhook Endpoint
+      operationId: deleteWebhookEndpoint
+      description: "Permanently deletes a webhook endpoint. Ledgerline will stop delivering events to it immediately. Requires an `Idempotency-Key` header."
+      parameters:
+        - name: webhookEndpointId
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/WebhookEndpointId"
+        - $ref: "#/components/parameters/IdempotencyKey"
+      responses:
+        "204":
+          description: No Content
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "404":
@@ -1039,6 +1148,97 @@ components:
         - has_more
         - url
 
+    WebhookEndpoint:
+      type: object
+      additionalProperties: true
+      properties:
+        id:
+          $ref: "#/components/schemas/WebhookEndpointId"
+        object:
+          type: string
+          const: webhook_endpoint
+        created:
+          type: string
+          format: date-time
+        livemode:
+          type: boolean
+        url:
+          type: string
+          format: uri
+          pattern: "^https://.*"
+        enabled_events:
+          type: array
+          items:
+            $ref: "#/components/schemas/EventType"
+        status:
+          $ref: "#/components/schemas/WebhookEndpointStatus"
+        description:
+          type: ["string", "null"]
+        metadata:
+          $ref: "#/components/schemas/Metadata"
+      required:
+        - id
+        - object
+        - created
+        - livemode
+        - url
+        - enabled_events
+        - status
+
+    WebhookEndpointWithSecret:
+      allOf:
+        - $ref: "#/components/schemas/WebhookEndpoint"
+        - type: object
+          properties:
+            secret:
+              type: string
+              description: "The signing secret for this endpoint (starts with whsec_). Returned ONLY when the endpoint is created. Store it now, it cannot be retrieved later. Use it to verify on every event Ledgerline delivers here."
+          required:
+            - secret
+
+    WebhookEndpointCreate:
+      type: object
+      additionalProperties: false
+      properties:
+        url:
+          type: string
+          format: uri
+          pattern: "^https://.*"
+        enabled_events:
+          type: array
+          minItems: 1
+          items:
+            $ref: "#/components/schemas/EventType"
+        description:
+          type: ["string", "null"]
+        metadata:
+          $ref: "#/components/schemas/Metadata"
+      required:
+        - url
+        - enabled_events
+
+    WebhookEndpointList:
+      type: object
+      additionalProperties: true
+      properties:
+        object:
+          type: string
+          const: list
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/WebhookEndpoint"
+        has_more:
+          type: boolean
+        url:
+          type: string
+          example: /v1/webhook_endpoints
+      required:
+        - object
+        - data
+        - has_more
+        - url
+
     PaymentStatus:
       type: string
       enum: [processing, requires_action, succeeded, failed, canceled]
@@ -1047,6 +1247,10 @@ components:
       type: string
       enum:
         [incomplete, incomplete_expired, trialing, active, past_due, canceled]
+
+    WebhookEndpointStatus:
+      type: string
+      enum: [enabled, disabled]
 
     CustomerId:
       type: string
@@ -1077,6 +1281,11 @@ components:
       type: string
       pattern: "^evt_[a-zA-Z0-9]+$"
       example: evt_abc123
+
+    WebhookEndpointId:
+      type: string
+      pattern: "^we_[a-zA-Z0-9]+$"
+      example: we_abc123
 
     EventType:
       type: string
