@@ -608,6 +608,73 @@ paths:
         "500":
           $ref: "#/components/responses/InternalServerError"
 
+webhooks:
+  event:
+    post:
+      tags:
+        - webhook_endpoints
+      summary: Event delivered to your endpoint
+      operationId: receiveEvent
+      security: []
+      description: >-
+        When an event occurs that matches a webhook endpoint's `enabled_events`,
+        Ledgerline sends an HTTP POST with the `Event` as the body to that
+        endpoint's `url`.
+
+
+        **Verify the signature.** Every request carries `webhook-id`,
+        `webhook-timestamp`, and `webhook-signature` headers. Recompute
+        the HMAC-SHA256 of `{webhook-id}.{webhook-timestamp}.{body}` with your
+        endpoint's `whsec_` secret and compare in constant time. Reject a
+        `webhook-timestamp` older than 5 minutes to prevent replay attacks.
+
+
+        **Deduplicate.** Delivery is at-least-once — the same event may arrive
+        more than once. Use `event.id` (equal to `webhook-id`) as an idempotency
+        key and skip events you have already processed.
+
+
+        **Acknowledge fast.** Return any `2xx` as soon as you have durably
+        recorded the event, then process asynchronously.
+
+
+        **Retries.** A `5xx`, network error, or timeout is retried with
+        exponential backoff over ~72 hours; an endpoint failing continuously for
+        72 hours is set to `disabled`. A `4xx` is a permanent rejection and is
+        not retried.
+      parameters:
+        - name: webhook-id
+          in: header
+          required: true
+          description: Unique id for this delivery, equal to `event.id`. Use as an idempotency key.
+          schema:
+            $ref: "#/components/schemas/EventId"
+        - name: webhook-timestamp
+          in: header
+          required: true
+          description: Unix timestamp in seconds. Reject if older than 5 minutes.
+          schema:
+            type: integer
+        - name: webhook-signature
+          in: header
+          required: true
+          description: "Space-delimited versioned HMAC-SHA256 signatures, `v1,<base64>`. At least one signature must match."
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Event"
+      responses:
+        "2XX":
+          description: Acknowledged
+        "4XX":
+          description: Permanent rejection, not retried.
+        "5XX":
+          description: Transient failure, retried with exponential backoff over ~72 hours.
+
 components:
   securitySchemes:
     apiKey:
