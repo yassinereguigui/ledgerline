@@ -1,0 +1,57 @@
+name: Docs
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - openapi.yaml
+      - docs-site/**
+      - .github/workflows/docs.yaml
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+
+      - run: npm ci
+
+      - name: Assemble site
+        run: |
+          mkdir -p _site
+          cp docs-site/index.html _site/index.html
+          cp openapi.yaml _site/openapi.yaml
+          cp node_modules/@scalar/api-reference/dist/browser/standalone.js _site/scalar.js
+
+      - uses: actions/configure-pages@v6
+
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5
