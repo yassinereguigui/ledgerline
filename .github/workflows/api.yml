@@ -50,7 +50,8 @@ jobs:
           /work/openapi-base.yaml \
           /work/openapi.yaml \
           --fail-on ERR \
-          --err-ignore /work/.oasdiff-ignore
+          --err-ignore /work/.oasdiff-ignore \
+          --severity-levels /work/.oasdiff-severity
 
       - name: Post API changelog comment
         env:

@@ -11,8 +11,10 @@ info:
 servers:
   - url: https://api.ledgerline.com/v1
     description: Production
+    x-internal: false
   - url: https://sandbox.api.ledgerline.com/v1
     description: Sandbox
+    x-internal: false
 
 tags:
   - name: customers
@@ -51,8 +53,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/CustomerList"
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
         "500":
           $ref: "#/components/responses/InternalServerError"
 
@@ -86,6 +92,8 @@ paths:
           $ref: "#/components/responses/Unauthorized"
         "422":
           $ref: "#/components/responses/UnprocessableEntity"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
         "500":
           $ref: "#/components/responses/InternalServerError"
 
@@ -109,10 +117,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Customer"
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "404":
           $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
         "500":
           $ref: "#/components/responses/InternalServerError"
 
@@ -133,8 +145,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PlanList"
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
         "500":
           $ref: "#/components/responses/InternalServerError"
 
@@ -168,6 +184,8 @@ paths:
           $ref: "#/components/responses/Unauthorized"
         "422":
           $ref: "#/components/responses/UnprocessableEntity"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
         "500":
           $ref: "#/components/responses/InternalServerError"
 
@@ -191,10 +209,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Plan"
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "404":
           $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
         "500":
           $ref: "#/components/responses/InternalServerError"
 
@@ -217,8 +239,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SubscriptionList"
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
         "500":
           $ref: "#/components/responses/InternalServerError"
 
@@ -252,6 +278,8 @@ paths:
           $ref: "#/components/responses/Unauthorized"
         "422":
           $ref: "#/components/responses/UnprocessableEntity"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
         "500":
           $ref: "#/components/responses/InternalServerError"
 
@@ -275,10 +303,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Subscription"
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "404":
           $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
         "500":
           $ref: "#/components/responses/InternalServerError"
 
@@ -313,6 +345,8 @@ paths:
           $ref: "#/components/responses/Unauthorized"
         "404":
           $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
         "500":
           $ref: "#/components/responses/InternalServerError"
 
@@ -334,8 +368,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PaymentMethodList"
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
         "500":
           $ref: "#/components/responses/InternalServerError"
 
@@ -369,6 +407,8 @@ paths:
           $ref: "#/components/responses/Unauthorized"
         "422":
           $ref: "#/components/responses/UnprocessableEntity"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
         "500":
           $ref: "#/components/responses/InternalServerError"
 
@@ -392,10 +432,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PaymentMethod"
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "404":
           $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
         "500":
           $ref: "#/components/responses/InternalServerError"
 
@@ -419,8 +463,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PaymentList"
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
         "500":
           $ref: "#/components/responses/InternalServerError"
 
@@ -444,10 +492,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Payment"
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "404":
           $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
         "500":
           $ref: "#/components/responses/InternalServerError"
 
@@ -469,8 +521,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/EventList"
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
         "500":
           $ref: "#/components/responses/InternalServerError"
 
@@ -494,10 +550,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Event"
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "404":
           $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
         "500":
           $ref: "#/components/responses/InternalServerError"
 
@@ -532,6 +592,8 @@ paths:
           $ref: "#/components/responses/Unauthorized"
         "422":
           $ref: "#/components/responses/UnprocessableEntity"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
         "500":
           $ref: "#/components/responses/InternalServerError"
 
@@ -551,8 +613,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/WebhookEndpointList"
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
         "500":
           $ref: "#/components/responses/InternalServerError"
 
@@ -576,10 +642,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/WebhookEndpoint"
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "404":
           $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
         "500":
           $ref: "#/components/responses/InternalServerError"
 
@@ -605,6 +675,8 @@ paths:
           $ref: "#/components/responses/Unauthorized"
         "404":
           $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
         "500":
           $ref: "#/components/responses/InternalServerError"
 
@@ -655,12 +727,16 @@ webhooks:
           description: Unix timestamp in seconds. Reject if older than 5 minutes.
           schema:
             type: integer
+            format: int64
+            minimum: 0
+            maximum: 4102444800
         - name: webhook-signature
           in: header
           required: true
           description: "Space-delimited versioned HMAC-SHA256 signatures, `v1,<base64>`. At least one signature must match."
           schema:
             type: string
+            maxLength: 512
       requestBody:
         required: true
         content:
@@ -702,18 +778,23 @@ components:
         created:
           type: string
           format: date-time
+          maxLength: 40
         livemode:
           type: boolean
         email:
           type: string
           format: email
+          maxLength: 255
         name:
           type: string
+          maxLength: 255
           example: Will Smith
         description:
           type: ["string", "null"]
+          maxLength: 500
         phone:
           type: ["string", "null"]
+          maxLength: 32
         address:
           $ref: "#/components/schemas/Address"
         metadata:
@@ -723,23 +804,29 @@ components:
       type: object
       required:
         - country
-      additionalProperties: true
+      additionalProperties: false
       properties:
         country:
           type: string
           pattern: "^[A-Z]{2}$"
+          maxLength: 2
           description: Two-letter ISO 3166-1 alpha-2 country code.
           example: NL
         line1:
           type: string
+          maxLength: 255
         line2:
           type: ["string", "null"]
+          maxLength: 255
         city:
           type: string
+          maxLength: 255
         state:
           type: ["string", "null"]
+          maxLength: 255
         postal_code:
           type: string
+          maxLength: 16
 
     CustomerList:
       type: object
@@ -754,12 +841,14 @@ components:
           const: "list"
         data:
           type: array
+          maxItems: 100
           items:
             $ref: "#/components/schemas/Customer"
         has_more:
           type: boolean
         url:
           type: string
+          maxLength: 2048
           example: /v1/customers
 
     CustomerCreate:
@@ -771,12 +860,16 @@ components:
         email:
           type: string
           format: email
+          maxLength: 255
         name:
           type: ["string", "null"]
+          maxLength: 255
         description:
           type: ["string", "null"]
+          maxLength: 500
         phone:
           type: ["string", "null"]
+          maxLength: 32
         address:
           $ref: "#/components/schemas/Address"
         metadata:
@@ -786,6 +879,9 @@ components:
       type: object
       description: >-
         Key-value pairs you can attach to store your own identifiers or notes. Ledgerline never interprets these. Useful for linking a resource to a record in your system.
+      maxProperties: 50
+      propertyNames:
+        maxLength: 40
       additionalProperties:
         type: string
         maxLength: 500
@@ -802,12 +898,17 @@ components:
         created:
           type: string
           format: date-time
+          maxLength: 40
         livemode:
           type: boolean
         nickname:
           type: ["string", "null"]
+          maxLength: 255
         amount:
           type: integer
+          format: int64
+          minimum: 0
+          maximum: 99999999
         currency:
           $ref: "#/components/schemas/Currency"
         interval:
@@ -815,7 +916,9 @@ components:
           enum: [day, week, month, year]
         interval_count:
           type: integer
+          format: int32
           minimum: 1
+          maximum: 366
           default: 1
         active:
           type: boolean
@@ -841,12 +944,14 @@ components:
           const: list
         data:
           type: array
+          maxItems: 100
           items:
             $ref: "#/components/schemas/Plan"
         has_more:
           type: boolean
         url:
           type: string
+          maxLength: 2048
           example: /v1/plans
       required:
         - object
@@ -860,6 +965,9 @@ components:
       properties:
         amount:
           type: integer
+          format: int64
+          minimum: 0
+          maximum: 99999999
         currency:
           $ref: "#/components/schemas/Currency"
         interval:
@@ -867,13 +975,16 @@ components:
           enum: [day, week, month, year]
         interval_count:
           type: integer
+          format: int32
           minimum: 1
+          maximum: 366
           default: 1
         active:
           type: boolean
           default: true
         nickname:
           type: string
+          maxLength: 255
         metadata:
           $ref: "#/components/schemas/Metadata"
       required:
@@ -893,6 +1004,7 @@ components:
         created:
           type: string
           format: date-time
+          maxLength: 40
         livemode:
           type: boolean
         status:
@@ -900,26 +1012,33 @@ components:
         start_date:
           type: string
           format: date-time
+          maxLength: 40
         current_period_start:
           type: ["string", "null"]
           format: date-time
+          maxLength: 40
         current_period_end:
           type: ["string", "null"]
           format: date-time
+          maxLength: 40
         cancel_at_period_end:
           type: boolean
         canceled_at:
           type: ["string", "null"]
           format: date-time
+          maxLength: 40
         ended_at:
           type: ["string", "null"]
           format: date-time
+          maxLength: 40
         trial_start:
           type: ["string", "null"]
           format: date-time
+          maxLength: 40
         trial_end:
           type: ["string", "null"]
           format: date-time
+          maxLength: 40
         metadata:
           $ref: "#/components/schemas/Metadata"
         customer:
@@ -948,12 +1067,14 @@ components:
           const: list
         data:
           type: array
+          maxItems: 100
           items:
             $ref: "#/components/schemas/Subscription"
         has_more:
           type: boolean
         url:
           type: string
+          maxLength: 2048
           example: /v1/subscriptions
       required:
         - object
@@ -971,7 +1092,9 @@ components:
           $ref: "#/components/schemas/PlanId"
         trial_period_days:
           type: integer
+          format: int32
           minimum: 1
+          maximum: 730
         metadata:
           $ref: "#/components/schemas/Metadata"
       required:
@@ -990,6 +1113,7 @@ components:
         created:
           type: string
           format: date-time
+          maxLength: 40
         livemode:
           type: boolean
         customer:
@@ -1002,21 +1126,34 @@ components:
           properties:
             last4:
               type: string
+              pattern: "^[0-9]{4}$"
+              maxLength: 4
             mandate_reference:
               type: string
+              maxLength: 35
+              pattern: "^[a-zA-Z0-9/?:().,'+ -]{1,35}$"
         card:
           description: Masked CARD details. Present only when type is card. The full PAN is never stored — only the last 4 digits and the expiration month and year.
           type: object
           properties:
             brand:
               type: string
+              maxLength: 32
               example: visa
             last4:
               type: string
+              pattern: "^[0-9]{4}$"
+              maxLength: 4
             exp_month:
               type: integer
+              format: int32
+              minimum: 1
+              maximum: 12
             exp_year:
               type: integer
+              format: int32
+              minimum: 2000
+              maximum: 2100
         metadata:
           $ref: "#/components/schemas/Metadata"
       required:
@@ -1037,6 +1174,7 @@ components:
           $ref: "#/components/schemas/PaymentMethodType"
         token:
           type: string
+          maxLength: 512
           description: "Opaque single-use token from the licensed payment provider's client SDK, representing the customer's card or bank account. Ledgerline never receives raw card or IBAN data."
         metadata:
           $ref: "#/components/schemas/Metadata"
@@ -1054,12 +1192,14 @@ components:
           const: list
         data:
           type: array
+          maxItems: 100
           items:
             $ref: "#/components/schemas/PaymentMethod"
         has_more:
           type: boolean
         url:
           type: string
+          maxLength: 2048
           example: /v1/payment_methods
       required:
         - object
@@ -1079,12 +1219,16 @@ components:
         created:
           type: string
           format: date-time
+          maxLength: 40
         livemode:
           type: boolean
         status:
           $ref: "#/components/schemas/PaymentStatus"
         amount:
           type: integer
+          format: int64
+          minimum: 0
+          maximum: 99999999
         currency:
           $ref: "#/components/schemas/Currency"
         customer:
@@ -1104,8 +1248,10 @@ components:
             redirect_url:
               type: string
               format: uri
+              maxLength: 2048
         failure_reason:
           type: ["string", "null"]
+          maxLength: 500
         metadata:
           $ref: "#/components/schemas/Metadata"
       required:
@@ -1131,12 +1277,14 @@ components:
           const: list
         data:
           type: array
+          maxItems: 100
           items:
             $ref: "#/components/schemas/Payment"
         has_more:
           type: boolean
         url:
           type: string
+          maxLength: 2048
           example: /v1/payments
       required:
         - object
@@ -1156,12 +1304,14 @@ components:
         created:
           type: string
           format: date-time
+          maxLength: 40
         livemode:
           type: boolean
         type:
           $ref: "#/components/schemas/EventType"
         api_version:
           type: string
+          maxLength: 32
           example: 1.0.0
           description: The API version this event payload was rendered with.
         data:
@@ -1202,12 +1352,14 @@ components:
           const: list
         data:
           type: array
+          maxItems: 100
           items:
             $ref: "#/components/schemas/Event"
         has_more:
           type: boolean
         url:
           type: string
+          maxLength: 2048
           example: /v1/events
       required:
         - object
@@ -1227,20 +1379,25 @@ components:
         created:
           type: string
           format: date-time
+          maxLength: 40
         livemode:
           type: boolean
         url:
           type: string
           format: uri
+          maxLength: 2048
           pattern: "^https://.*"
         enabled_events:
           type: array
+          maxItems: 20
+          uniqueItems: true
           items:
             $ref: "#/components/schemas/EventType"
         status:
           $ref: "#/components/schemas/WebhookEndpointStatus"
         description:
           type: ["string", "null"]
+          maxLength: 500
         metadata:
           $ref: "#/components/schemas/Metadata"
       required:
@@ -1259,6 +1416,7 @@ components:
           properties:
             secret:
               type: string
+              maxLength: 128
               description: "The signing secret for this endpoint (starts with whsec_). Returned ONLY when the endpoint is created. Store it now, it cannot be retrieved later. Use it to verify on every event Ledgerline delivers here."
           required:
             - secret
@@ -1270,14 +1428,18 @@ components:
         url:
           type: string
           format: uri
+          maxLength: 2048
           pattern: "^https://.*"
         enabled_events:
           type: array
           minItems: 1
+          maxItems: 20
+          uniqueItems: true
           items:
             $ref: "#/components/schemas/EventType"
         description:
           type: ["string", "null"]
+          maxLength: 500
         metadata:
           $ref: "#/components/schemas/Metadata"
       required:
@@ -1293,12 +1455,14 @@ components:
           const: list
         data:
           type: array
+          maxItems: 100
           items:
             $ref: "#/components/schemas/WebhookEndpoint"
         has_more:
           type: boolean
         url:
           type: string
+          maxLength: 2048
           example: /v1/webhook_endpoints
       required:
         - object
@@ -1323,36 +1487,43 @@ components:
       type: string
       pattern: "^cus_[a-zA-Z0-9]+$"
       example: cus_abc123
+      maxLength: 255
 
     PlanId:
       type: string
       pattern: "^plan_[a-zA-Z0-9]+$"
       example: plan_abc123
+      maxLength: 255
 
     SubscriptionId:
       type: string
       pattern: "^sub_[a-zA-Z0-9]+$"
       example: sub_abc123
+      maxLength: 255
 
     PaymentMethodId:
       type: string
       pattern: "^pm_[a-zA-Z0-9]+$"
       example: pm_abc123
+      maxLength: 255
 
     PaymentId:
       type: string
       pattern: "^pay_[a-zA-Z0-9]+$"
       example: pay_abc123
+      maxLength: 255
 
     EventId:
       type: string
       pattern: "^evt_[a-zA-Z0-9]+$"
       example: evt_abc123
+      maxLength: 255
 
     WebhookEndpointId:
       type: string
       pattern: "^we_[a-zA-Z0-9]+$"
       example: we_abc123
+      maxLength: 255
 
     EventType:
       type: string
@@ -1370,6 +1541,7 @@ components:
     Currency:
       type: string
       pattern: "^[a-z]{3}$"
+      maxLength: 3
       description: ISO 4217
       example: eur
 
@@ -1388,19 +1560,26 @@ components:
         type:
           type: string
           format: uri
+          maxLength: 512
           example: "https://api.ledgerline.com/problems/customer-not-found"
         title:
           type: string
+          maxLength: 255
           example: "Customer Not Found"
         status:
           type: integer
+          format: int32
+          minimum: 100
+          maximum: 599
           example: 404
         detail:
           type: string
+          maxLength: 1000
           example: "No customer with id cus_abc123 exists in this account."
         instance:
           type: string
           format: uri-reference
+          maxLength: 512
           example: "/v1/customers/cus_abc123"
 
   headers:
@@ -1410,6 +1589,7 @@ components:
       schema:
         type: string
         format: uri-reference
+        maxLength: 2048
       example: /v1/customers/cus_abc123
 
   parameters:
@@ -1429,6 +1609,7 @@ components:
       required: false
       schema:
         type: integer
+        format: int32
         minimum: 1
         maximum: 100
         default: 20
@@ -1439,6 +1620,7 @@ components:
       required: false
       schema:
         type: string
+        maxLength: 500
 
     CustomerFilter:
       in: query
@@ -1490,13 +1672,6 @@ components:
           schema:
             $ref: "#/components/schemas/ProblemDetail"
 
-    Forbidden:
-      description: "The API key is valid but does not have permission to perform this action."
-      content:
-        application/problem+json:
-          schema:
-            $ref: "#/components/schemas/ProblemDetail"
-
     NotFound:
       description: "The requested resource does not exist or has been deleted."
       content:
@@ -1519,8 +1694,33 @@ components:
             $ref: "#/components/schemas/ProblemDetail"
       headers:
         Retry-After:
+          description: Seconds to wait before retrying.
           schema:
             type: integer
+            format: int32
+            minimum: 0
+            maximum: 86400
+        RateLimit-Limit:
+          description: The request quota for the current window.
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+            maximum: 1000000
+        RateLimit-Remaining:
+          description: Requests remaining in the current window.
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+            maximum: 1000000
+        RateLimit-Reset:
+          description: Seconds until the quota resets.
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+            maximum: 86400
 
     InternalServerError:
       description: "An unexpected error occurred on Ledgerline's side. Retrying with exponential backoff is safe. If the problem persists, contact support with the instance value from the response body."
