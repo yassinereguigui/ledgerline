@@ -21,9 +21,24 @@ rules:
   oas3-valid-schema-example: error
   oas3-valid-media-example: error
   "owasp:api8:2023-define-cors-origin": off
-  "owasp:api4:2023-string-limit": warn
-  "owasp:api4:2023-integer-limit": warn
-  "owasp:api4:2023-integer-format": warn
-  "owasp:api4:2023-array-limit": warn
+
+  # Spec-hardening slice (chore/spec-hardening): cleared to zero, then promoted
+  # warn -> error so they cannot regress. Adding an unbounded string / integer /
+  # array, or an operation missing a 429 or validation (400/422) response, now
+  # fails CI.
+  "owasp:api4:2023-string-limit": error
+  "owasp:api4:2023-integer-limit": error
+  "owasp:api4:2023-integer-format": error
+  "owasp:api4:2023-array-limit": error
+  "owasp:api4:2023-rate-limit-responses-429": error
+  "owasp:api8:2023-define-error-validation": error
+  # Cleared by declaring server audience (`x-internal: false` on both public servers):
+  "owasp:api9:2023-inventory-access": error
+
+  # Deliberately kept at warn (documented triage — not yet cleanly enforceable):
+  #  - string-restricted: free-text fields (name, description, postal_code, …)
+  #    legitimately have no format/pattern; only maxLength applies, and it is set.
+  #  - rate-limit: RateLimit-* response headers are emitted by the Kong gateway in
+  #    Phase 3 — declaring them before the app sends them would be a contract lie.
+  "owasp:api4:2023-string-restricted": warn
   "owasp:api4:2023-rate-limit": warn
-  "owasp:api9:2023-inventory-access": warn
