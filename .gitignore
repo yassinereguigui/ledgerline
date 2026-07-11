@@ -8,6 +8,13 @@ BRIEF.md
 CLAUDE.md
 docs/
 
+# Postman
 .postman/resources.yaml
 
+# Node
 node_modules
+
+# Python
+.venv
+__pycache__/
+*.pyc
