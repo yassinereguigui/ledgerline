@@ -1667,6 +1667,12 @@ components:
 
     Unauthorized:
       description: "No valid API key was provided. Include your key in the Authorization: Bearer ll_live_... header."
+      headers:
+        WWW-Authenticate:
+          description: The authentication scheme to use, as required by RFC 9110 for 401 responses.
+          schema:
+            type: string
+          example: Bearer
       content:
         application/problem+json:
           schema:
