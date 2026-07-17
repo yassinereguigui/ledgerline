@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse
 
 
 class ProblemException(Exception):
-    """An error to be rendered as an RFV 9457 application/problem+json response"""
+    """An error to be rendered as an RFC 9457 application/problem+json response"""
 
     def __init__(
         self,

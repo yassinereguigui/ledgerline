@@ -15,3 +15,10 @@ class InMemoryCustomerRepository:
 
     def get(self, customer_id: str) -> dict | None:
         return self._store.get(customer_id)
+
+
+_repository = InMemoryCustomerRepository()
+
+
+def get_customer_repository() -> CustomerRepository:
+    return _repository
