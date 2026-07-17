@@ -10,6 +10,7 @@ dependencies = [
 [dependency-groups]
 dev = [
     "httpx>=0.28.1",
+    "mutmut>=3.6.0",
     "pytest>=9.1.1",
     "ruff>=0.15.21",
 ]
@@ -21,3 +22,7 @@ testpaths = ["tests"]
 [tool.basedpyright]
 venvPath = "."
 venv = ".venv"
+
+[tool.mutmut]
+source_paths = ["app/"]
+pytest_add_cli_args_test_selection = ["tests/"]

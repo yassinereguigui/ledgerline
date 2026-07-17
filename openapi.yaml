@@ -1672,6 +1672,7 @@ components:
           description: The authentication scheme to use, as required by RFC 9110 for 401 responses.
           schema:
             type: string
+            maxLength: 256
           example: Bearer
       content:
         application/problem+json:
