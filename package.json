@@ -3,7 +3,7 @@
     "private": true,
     "devDependencies": {
         "@scalar/api-reference": "^1.62.9",
-        "@stoplight/prism-cli": "5.15.11",
+        "@stoplight/prism-cli": "5.16.0",
         "@stoplight/spectral-cli": "6.16.1",
         "@stoplight/spectral-owasp-ruleset": "2.0.1"
     }
