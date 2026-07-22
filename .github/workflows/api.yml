@@ -49,6 +49,7 @@ jobs:
           tufin/oasdiff:v1.23.0 breaking \
           /work/openapi-base.yaml \
           /work/openapi.yaml \
+          --flatten-allof \
           --fail-on ERR \
           --err-ignore /work/.oasdiff-ignore \
           --severity-levels /work/.oasdiff-severity
@@ -59,6 +60,7 @@ jobs:
         run: |
           CHANGELOG=$(docker run --rm -v "$(pwd):/work" \
             tufin/oasdiff:v1.23.0 changelog \
+            --flatten-allof \
             /work/openapi-base.yaml /work/openapi.yaml)
           [ -z "$CHANGELOG" ] && CHANGELOG="No API changes detected."
           {
