@@ -234,6 +234,7 @@ dev = [
     { name = "httpx" },
     { name = "mutmut" },
     { name = "pytest" },
+    { name = "pyyaml" },
     { name = "ruff" },
 ]
 

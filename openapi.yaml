@@ -1555,8 +1555,33 @@ components:
         - type
         - title
         - status
+        - code
       additionalProperties: true
       properties:
+        code:
+          type: string
+          enum:
+            - unauthorized
+            - customer_not_found
+            - validation_error
+            - not_found
+            - method_not_allowed
+            - internal_error
+          maxLength: 64
+          description: |-
+            Stable, machine-readable error code — the value clients branch on.
+
+            | code | HTTP | type URI | when it occurs |
+            | --- | --- | --- | --- |
+            | `unauthorized` | 401 | `/problems/unauthorized` | No valid API key was provided. |
+            | `customer_not_found` | 404 | `/problems/customer-not-found` | No customer exists with that id. |
+            | `validation_error` | 422 | `/problems/validation-error` | Request body failed field validation. |
+            | `not_found` | 404 | `about:blank` | The route does not exist. |
+            | `method_not_allowed` | 405 | `about:blank` | The route exists but not for this method. |
+            | `internal_error` | 500 | `about:blank` | An unexpected fault on our side. |
+
+            The registry grows as handlers land.
+          example: customer_not_found
         type:
           type: string
           format: uri
@@ -1581,6 +1606,45 @@ components:
           format: uri-reference
           maxLength: 512
           example: "/v1/customers/cus_abc123"
+
+    ValidationProblemDetail:
+      allOf:
+        - $ref: "#/components/schemas/ProblemDetail"
+        - type: object
+          properties:
+            errors:
+              type: array
+              maxItems: 100
+              items:
+                type: object
+                properties:
+                  field:
+                    type: string
+                    maxLength: 255
+                    example: email
+                  code:
+                    type: string
+                    maxLength: 64
+                    enum:
+                      - required
+                      - unknown_field
+                      - invalid_type
+                      - invalid
+                    description: >-
+                      Owned, stable validation code for this field, mapped from
+                      the validation layer to a fixed vocabulary so it does not
+                      shift when the framework changes.
+                    example: required
+                  message:
+                    type: string
+                    maxLength: 1000
+                    example: Field required
+                required:
+                  - field
+                  - code
+                  - message
+          required:
+            - errors
 
   headers:
     Location:
@@ -1691,7 +1755,7 @@ components:
       content:
         application/problem+json:
           schema:
-            $ref: "#/components/schemas/ProblemDetail"
+            $ref: "#/components/schemas/ValidationProblemDetail"
 
     TooManyRequests:
       description: "You have exceeded the rate limit. Wait for the duration in the Retry-After header before retrying."

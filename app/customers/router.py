@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, Response, status, Request
 from app.customers.repository import CustomerRepository, get_customer_repository
 from app.customers.schemas import CustomerCreate
 from app.dependencies import require_api_key
-from app.problems import ProblemException
+from app.problems import ErrorCode, ProblemException, problem_type
 
 router = APIRouter(prefix="/v1", tags=["customers"])
 
@@ -57,8 +57,9 @@ def get_customer(
         raise ProblemException(
             status=404,
             title="Customer Not Found",
+            code=ErrorCode.CUSTOMER_NOT_FOUND,
             detail=f"No customer with id {customer_id} exists in this account",
-            type_="https://api.ledgerline.com/problems/customer-not-found",
+            type_=problem_type("customer-not-found"),
         )
 
     return customer

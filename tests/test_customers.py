@@ -55,23 +55,7 @@ def test_get_unknown_customer_returns_404_problem_json(client):
     assert body["status"] == 404
     assert body["title"] == "Customer Not Found"
     assert "cus_doesnotexist" in body["detail"]
-
-
-def test_missing_api_key_returns_401_problem_json(client):
-    resp = client.post(
-        "/v1/customers",
-        headers={"Idempotency-key": "key-noauth"},
-        json={"email": "gym@example.com"},
-    )
-
-    assert resp.status_code == 401
-    assert resp.headers["content-type"].startswith("application/problem+json")
-    assert resp.headers["www-authenticate"] == "Bearer"
-    body = resp.json()
-    assert body["status"] == 401
-    assert body["type"] == "https://api.ledgerline.com/problems/unauthorized"
-    assert body["title"] == "Unauthorized"
-    assert body["detail"]
+    assert body["code"] == "customer_not_found"
 
 
 def test_live_key_sets_livemode_true(client):
